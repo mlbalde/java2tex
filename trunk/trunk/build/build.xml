@@ -1,0 +1,126 @@
+<project name="java2tex" default="dist" basedir=".">
+
+    <description>Build file for java2tex</description>
+
+    <!-- CONFIGURATION VARIABLES -->
+    <property environment="env" />
+
+    <!-- PROPERTIES -->
+    <property file="build.properties"/>
+
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp>
+            <format property="TODAY" pattern="MMM dd, yyyy - hh:mm:ss aa"/>
+        </tstamp>
+        <echo>Started at: ${TODAY}</echo>
+        <echo>compile.classpath=${compile.classpath}</echo>
+    </target>
+
+    <!-- Temporary directories that are created for the build -->
+    <target name="make-build-dirs" >
+        <mkdir dir="${build.dist}"/>
+        <mkdir dir="${build.classes}" />
+    </target>
+
+    <!-- CLEAN COMPILE -->
+    <target name="ccompile" 
+   	      depends="clean,compile"  
+   	      description="compile the source from scratch"/>
+
+    <target name="compile" depends="init,make-build-dirs">
+        <javac srcdir="${java2tex.src}"
+            fork="true"
+            destdir="${build.classes}"
+            optimize="${compile.optimize}"
+            deprecation="${compile.deprecation}"
+            debug="${compile.debug}"
+            failonerror="${compile.failonerror}">
+            <classpath>
+	      <fileset dir="${java2tex.lib}">
+	        <include name="**/**.jar" />
+              </fileset>
+            </classpath>
+         </javac>
+         <property name="forceOverwrite" value="no"/>
+    </target>
+
+
+    <target name="dist"
+            depends="compile"
+            description="generate the distribution">
+            
+        <jar jarfile="${build.dist}/${java2tex.jarfile}-${DSTAMP}.jar">
+            <fileset dir="${build.classes}">
+                <include name="**/*.class"/>
+            </fileset>
+            <fileset dir="${java2tex.src}">
+                <include name="**/*.properties"/>
+            </fileset>
+        </jar>
+
+    </target>
+
+    <!-- Use this for testing -->
+    <target name="run" description="Create a PDF file for demonstration purposes" depends="dist">
+    
+        <echo>
+          ---------------------------------------
+                     Running java2tex
+          ---------------------------------------
+          Assumptions: 
+          
+              1. Windows OS
+              2. Java2TeX installed under C:\    
+          ---------------------------------------
+        </echo>
+ 
+        <java classname="org.java2tex.demo.ArticleExample" fork="true" >
+            <jvmarg value="-Xms128M"/>
+            <jvmarg value="-Xmx128M"/>
+            <classpath>
+                <fileset dir="${build.dist}">
+                    <include name="**/**.jar" />
+                </fileset>
+                <fileset dir="${java2tex.lib}">
+                    <include name="**/**.jar" />
+                </fileset>
+            </classpath>
+        </java>
+
+    </target>
+
+    <!-- CLEAN UP TASKS -->
+    <target name="clean" description="clean up" >
+        <delete dir="${build.bytecode}"/>
+        <delete dir="${build.dist}"/>
+    </target>
+
+    <target name="tidy"
+            depends="clean"
+            description="clean up everything, even the Javadocs">
+        <delete dir="${java2tex.jdoc}"/>
+	<delete> <fileset dir="${java2tex.root}" includes="**/*~" defaultexcludes="no"/> </delete>
+    </target>
+
+  <!-- JAVADOC -->
+  <target name="javadoc" depends="init" description="Generates Javadoc for all source code.">
+
+        <delete dir="${java2tex.jdoc}"/>
+
+        <mkdir  dir="${java2tex.jdoc}"/>
+
+        <javadoc
+      packagenames="org.*"
+      sourcepath="${java2tex.src}"
+      classpath="${javadoc.classpath}"
+      destdir="${java2tex.jdoc}"
+      windowtitle="API Documentation"
+      breakiterator="yes"
+      access="private"
+      author="true"
+      version="true"
+      use="true"/>
+    </target>
+
+</project>
