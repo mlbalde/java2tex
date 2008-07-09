@@ -38,6 +38,8 @@ public class LatexGraphics {
 	 */ 
 	private String id=null;
 	
+	private StringBuilder latex;
+	
 	private String imgFile;
 	private String caption;
 	
@@ -46,42 +48,44 @@ public class LatexGraphics {
 	private String angle;
 	private String scale;
 	
+	private boolean isLandscape=false;
+	
 	public LatexGraphics(String file) {
+		
+		this.latex = new StringBuilder(); 		
 		this.imgFile = file;
 	}
 
 	public String getLatex() {
 	
-		StringBuilder latex = new StringBuilder(); 
-		
-		latex.append("\\includegraphics");
-		latex.append("[");
+		insert("\\includegraphics");
+		insert("[");
 		if (width!=null) {
-			latex.append("width="+width);
+			insert("width="+width);
 		}
 		
 		if (height!=null) {
 			if (width!=null) {
-				latex.append(",");				
+				insert(",");				
 			}
-			latex.append("height="+height);
+			insert("height="+height);
 		}
 		
 		if (angle!=null) {
 			if (width!=null || height!=null) {
-				latex.append(",");				
+				insert(",");				
 			}
-			latex.append("angle="+angle);				
+			insert("angle="+angle);				
 		}
 		
 		if (scale!=null) {
 			if (width!=null || height!=null || angle!=null) {
-				latex.append(",");				
+				insert(",");				
 			}
-			latex.append("scale="+scale);
+			insert("scale="+scale);
 		}
 		
-		latex.append("]{"+imgFile+"}");
+		add("]{"+imgFile+"}");
 
 		return latex.toString();
 	}
@@ -183,4 +187,28 @@ public class LatexGraphics {
 	public void setId(String id) {
 		this.id = id;
 	}
+
+	/**
+	 * @return the isLandscape
+	 */
+	public boolean isLandscape() {
+		return isLandscape;
+	}
+
+	/**
+	 * @param isLandscape the isLandscape to set
+	 */
+	public void setLandscape(boolean isLandascape) {
+		this.isLandscape = isLandascape;
+	}
+	
+	private void add(String txt) {
+		latex.append(txt).append("\n");
+	}
+
+	private void insert(String txt) {
+		latex.append(txt);
+	}
+
+
 }
