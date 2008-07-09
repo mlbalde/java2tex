@@ -1,0 +1,44 @@
+___________________________________________________________________________________________________	
+
+   JULY 8, 2008
+___________________________________________________________________________________________________	
+
+1. LatexProcessor: Fixed the month literal in the directory path
+
+2. LatexTable:
+
+	Forces the specification of the number of columns from the outset (in the constructor)
+	
+	Added support for landscape mode
+	
+	Added support for headers
+	
+	Added method for adding a horizontal line
+	
+	Added method for aligning columns for each column separately
+	
+	Added method for adding the rows of the table one-by-one, 
+	in addition to the bulk loading method setValues(String[][] values)
+
+3. LatexGraphics:
+
+	Added support for landscape mode
+	
+	Introduced instance variable StringBuilder for consistency 
+	(with the other classes) and convenience
+
+4. LatexDocument:
+
+	Changed default documentStyle from article to report
+	
+	Added documentStyle options
+	
+	Added a method that provides a list of the LaTeX special characters
+	
+	Added a method to replace all special characters from a given String
+	
+	Added a few new packages
+	
+	Added methods for adding chapters, sections, and subsections with and 
+	without enumeration while, in the latter case, retaining them in the ToC
+___________________________________________________________________________________________________	
