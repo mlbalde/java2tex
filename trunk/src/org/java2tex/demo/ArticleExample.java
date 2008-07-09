@@ -99,15 +99,32 @@ public class ArticleExample {
 		
 		LatexDocument doc = new LatexDocument();
 		
+		//doc.setDocumentStyle("book");
+		
+		// We do not change the default options but if you want to try
+		// something cool and see what happens use the following:
+		//
+		// doc.setStyleOptions("11pt,a4paper,twoside,twocolumn,fleqn");
+		//
+		
 		doc.setTitle("Document Title");
-		doc.setAuthor("The name of the user that created this document");
+		doc.setAuthor("Haralambos Marmanis");
 		doc.setNotes("This is where the notes of the user go.") ;
 		
 		//You could use an abstract, instead of notes.
-		doc.add("\\section*{Notes}");
+		doc.add("\\chapter*{Notes}\\normalsize");
+		doc.add(" \\addcontentsline{toc}{chapter}{Notes}");
+		doc.add("\\pagestyle{plain}");
 		doc.add(doc.getNotes());
 		
-		doc.addSection("Introduction to LaTeX");
+		doc.newPage();
+		
+		doc.add("\\pagestyle{headings}");
+		
+		doc.add("\\pagenumbering{arabic}");
+
+		doc.addChapterNoLabel("Introduction to LaTeX");
+		
 		doc.add("\\LaTeX{} is a document preparation system for the \\TeX{} typesetting program.");
 		doc.add("It offers programmable desktop publishing features and extensive facilities ");
 		doc.add("for automating most aspects of typesetting and desktop publishing, including ");
@@ -118,7 +135,7 @@ public class ArticleExample {
 		
 		doc.newLine();
 		
-		doc.addSection("Some science");
+		doc.addSectionNoLabel("Some science");
 		
 		doc.add("Hello Albert Einstein!");
 		doc.addIndexEntry("Einstein");
@@ -126,6 +143,14 @@ public class ArticleExample {
 		LatexGraphics aeJpeg = new LatexGraphics(getGraphicsFileName("Einstein.jpg"));
 		aeJpeg.setHeight("4in");
 		aeJpeg.setCaption("Albert Einstein (1879-1955)");
+		
+		/** 
+		 * If your figure has large width then use the landscape mode.
+		 * Notice that this is different from rotating the image.
+		 * If you want to rotate just the image, use the <CODE>setAngle</CODE> method.
+		 */
+		// aeJpeg.setLandscape(true);
+		
 		doc.addFigure(aeJpeg);		
 		
 		doc.add("  % This is a comment, it is not shown in the final output.");
@@ -136,9 +161,7 @@ public class ArticleExample {
 		doc.add("    m &=& \\frac{m_0}{\\sqrt{1-\\frac{v^2}{c^2}}}");
 		doc.add("  \\end{eqnarray}");
 		
-		doc.newPage();
-		
-		doc.addSection("US Politics");
+		doc.addChapterNoLabel("US Politics");
 		doc.add("The federal government of the United States is the centralized United States ");
 		doc.add("governmental body established by the United States Constitution. The federal government ");
 		doc.add("has three branches: the legislature, executive, and judiciary. Through a system of ");
@@ -153,21 +176,40 @@ public class ArticleExample {
 		doc.add("government as a whole are limited by the Constitution, which leaves a great deal ");
 		doc.add("of authority to the individual states.");
 
-		doc.addSubsection("US Presidents");
+		doc.addSectionNoLabel("US Presidents");
 
-		String[][] names = {{"First Name","Last Name","From", "To"},
-				            {"John", "Kennedy","1961","1963"},
-				            {"Lyndon", "Johnson","1963","1969"},
-				            {"Richard","Nixon","1969","1974"},
-				            {"Jimmy","Carter","1977","1981"}};
-		LatexTable table = new LatexTable("Former U.S. Presidents (1961-1981)",5);
-		table.setValues(names);
-		table.alignColumns('c');
+		LatexTable table = new LatexTable("Former U.S. Presidents (1961-1981)",4,4);
 		
-		doc.add("Table ~\ref{"+table.getId()+" lists a the past US presidents between 1961 and 1981.");
+		table.setHeaders(new String[] {"First Name","Last Name","From", "To"});
+		table.alignColumns(new char[] {'l','l','r','r'});
+		
+		table.addRow(0,new String[]{"John", "Kennedy","1961","1963"});
+		table.addRow(1,new String[]{"Lyndon", "Johnson","1963","1969"});
+		table.addRow(2,new String[]{"Richard","Nixon","1969","1974"});
+		table.addRow(3,new String[]{"Jimmy","Carter","1977","1981"});
+		
+		// -----------------------------------------------------------------------------------
+		// The following sets the table contents at once, instead of using the addRow method
+		//
+		//		String[][] names = {{"John", "Kennedy","1961","1963"},
+		//	            {"Lyndon", "Johnson","1963","1969"},
+		//	            {"Richard","Nixon","1969","1974"},
+		//	            {"Jimmy","Carter","1977","1981"}};
+		//		table.setValues(names);
+		// -----------------------------------------------------------------------------------
+
+		// If your table is large then use the landscape mode
+		// table.setLandscape(true);
 
 		doc.addTable(table);
+
+		doc.newPage();
 		
+		//
+		// NOTICE that you must refer to a table AFTER you append it to the document.
+		//
+		doc.add("Table ~\\ref{"+table.getId()+"} lists the past US presidents between 1961 and 1981.");
+
 		LatexGraphics jkJpeg = new LatexGraphics(getGraphicsFileName("jk35.jpg"));
 		jkJpeg.setCaption("John Kennedy (1961-1963)");
 		doc.addFigure(jkJpeg);
