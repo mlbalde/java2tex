@@ -134,7 +134,7 @@ public class LatexProcessor {
 			
 			Calendar calendar = Calendar.getInstance();
 			tmp.append(calendar.get(Calendar.YEAR)).append("-");
-			tmp.append(calendar.get(Calendar.MONTH)).append("-");
+			tmp.append(calendar.get(Calendar.MONTH)+1).append("-");
 			tmp.append(calendar.get(Calendar.DAY_OF_MONTH));
 			
 			latexRootDir = tmp.toString();
@@ -198,7 +198,7 @@ public class LatexProcessor {
 		run(pb);
 		
 		//Run twice to get the references right
-		run(pb);
+		run(pb);		
 	}
 
 	private static void run(ProcessBuilder pb) {
