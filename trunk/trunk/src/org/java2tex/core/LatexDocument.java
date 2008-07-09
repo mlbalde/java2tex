@@ -22,6 +22,8 @@
  */
 package org.java2tex.core;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -54,8 +56,29 @@ public class LatexDocument {
 	/** 
 	 * The default value for a new document is <CODE>article</CODE>.
 	 * You can always reset it to whatever is required for your documents.
+	 * Available default styles include:
+	 * 
+	 *  <UL>
+	 *    <LI>article</LI>
+	 *    <LI>report</LI>
+	 *    <LI>letter</LI>
+	 *    <LI>book</LI>
+	 *  </UL>
 	 */
-	private String documentClass = "article";
+	private String documentStyle = "report";
+	
+	/**
+	 * The options for the different styles are:
+	 *
+	 * <OL>
+	 *   <LI><tt>article</tt>: 11pt, 12pt, twoside, twocolumn, draft, fleqn, leqno, acm</LI>
+	 *   <LI><tt>report</tt>: 11pt, 12pt, twoside, twocolumn, draft, fleqn, leqno, acm</LI>
+	 *   <LI><tt>letter</tt>: 11pt, 12pt, fleqn, leqno, acm</LI>
+	 *   <LI><tt>book</tt>: 11pt, 12pt, twoside, twocolumn, draft, fleqn, leqno</LI>
+	 * </OL>
+	 * If you specify more than one option, they must be separated by a comma.
+	 */
+	private String styleOptions = "12pt,a4paper,twoside,leqno";
 	
 	private String author = "Nobody";
 	
@@ -116,6 +139,11 @@ public class LatexDocument {
 	 * @param graphics
 	 */
 	public void addFigure(LatexGraphics graphics) {
+		
+		if (graphics.isLandscape()) {
+			add("\\begin{landscape}");
+		}
+		
 		add("\\begin{figure}[!htpb]");
 		
 		add(graphics.getLatex());
@@ -127,6 +155,11 @@ public class LatexDocument {
 		graphics.setId(figureId);
 		
 		add("\\end{figure}");
+
+		if (graphics.isLandscape()) {
+			add("\\end{landscape}");
+		}
+		
 		numberOfFigures++;
 	}
 	
@@ -135,6 +168,15 @@ public class LatexDocument {
 	 * @param table
 	 */
 	public void addTable(LatexTable table) {
+		
+		if (table.isLandscape()) {
+			add("\\begin{landscape}");
+		}
+		
+		/*
+		 * TODO: Temporarily the location is [!htpb], however, this can be
+		 * made configurable in the <CODE>LatexTable</CODE> class.  
+		 */
 		add("\\begin{table}[!htpb]");
 		
 		add(table.getLatex());
@@ -147,15 +189,34 @@ public class LatexDocument {
 		
 		add("\\end{table}");
 		
+		if (table.isLandscape()) {
+			add("\\end{landscape}");
+		}
+		
 		numberOfTables++;
+	}
+	
+	public void addChapter(String cTitle) {
+		add("\\chapter{"+cTitle+"}");
+	}
+	
+	public void addChapterNoLabel(String cTitle) {
+		add("\\chapter*{"+cTitle+"}");
+		add(" \\addcontentsline{toc}{chapter}{"+cTitle+"}");
 	}
 	
 	public void addSection(String sTitle) {
 		add("\\section{"+sTitle+"}");
 	}
 	
-	public void addSubsection(String sTitle) {
-		add("\\subsection{"+sTitle+"}");
+	public void addSectionNoLabel(String sTitle) {
+		add("\\section*{"+sTitle+"}");
+		add(" \\addcontentsline{toc}{section}{"+sTitle+"}");
+	}
+	
+	public void addSubsection(String ssTitle) {
+		add("\\subsection*{"+ssTitle+"}");
+		add(" \\addcontentsline{toc}{chapter}{"+ssTitle+"}");
 	}
 	
 	public void newPage() {
@@ -179,7 +240,11 @@ public class LatexDocument {
 		
 		StringBuilder latex = new StringBuilder(); 
 		
-		latex.append("\\documentclass{"+getDocumentClass()+"}\n");
+		latex.append("\\documentclass["+this.getStyleOptions());
+		latex.append("]{"+getDocumentStyle()+"}\n");
+		latex.append("\\usepackage{lscape}\n");
+		latex.append("\\usepackage{amsmath,amssymb,amsfonts} % Typical maths resource packages");
+		latex.append("\\usepackage{multicol}");
 		latex.append("\\usepackage{thumbpdf}\n");
 		latex.append("\\usepackage{makeidx}\n");
 		latex.append("\\usepackage[pdftex,\n");
@@ -196,12 +261,18 @@ public class LatexDocument {
 		latex.append("             pdfpagemode=None,\n");
 		latex.append("             bookmarksopen=true]{hyperref}\n");
 		latex.append("\\usepackage[pdftex]{color,graphicx}\n");
+		latex.append("\\parindent 1cm");
+		latex.append("\\parskip 0.2cm");
+		latex.append("\\topmargin 0.2cm");
+		latex.append("\\oddsidemargin 1cm");
+		latex.append("\\evensidemargin 0.5cm");
+		latex.append("\\textwidth 15cm");
+		latex.append("\\textheight 21cm");
 		latex.append("\\definecolor{rltred}{rgb}{0.75,0,0}\n");
 		latex.append("\\definecolor{rltgreen}{rgb}{0,0.5,0}\n");
 		latex.append("\\definecolor{rltblue}{rgb}{0,0,0.75}\n");
 		latex.append("\\title{"+getTitle()+"}\n");
-		latex.append("\\author{"+getAuthor()+"}\n");
-		latex.append("\\date{\\today}\n");
+		latex.append("\\author{"+getAuthor()+"\\\\  Created on \\today }\n");
 
 		return latex.toString();
 	}
@@ -213,11 +284,15 @@ public class LatexDocument {
 		latex.append(initLatex());
 
 		latex.append("\\makeindex\n");
+		
+		latex.append("\\begin{document}\n");
 
-		latex.append("\\begin{document}\\label{start}\n");
-
+		//latex.append("\\setcounter{chapter}{1}");
+		
 		latex.append("\\maketitle\n");
-
+		
+		latex.append("\\addcontentsline{toc}{chapter}{Contents}");
+		latex.append("\\pagenumbering{roman}");
 		latex.append("\\tableofcontents\n");
 
 		if (numberOfFigures > 0) {
@@ -246,17 +321,17 @@ public class LatexDocument {
 	}
 
 	/**
-	 * @return the documentClass
+	 * @return the documentStyle
 	 */
-	public String getDocumentClass() {
-		return documentClass;
+	public String getDocumentStyle() {
+		return documentStyle;
 	}
 
 	/**
-	 * @param documentClass the documentClass to set
+	 * @param documentStyle the documentStyle to set
 	 */
-	public void setDocumentClass(String documentClass) {
-		this.documentClass = documentClass;
+	public void setDocumentStyle(String documentClass) {
+		this.documentStyle = documentClass;
 	}
 
 	/**
@@ -313,5 +388,57 @@ public class LatexDocument {
 	 */
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+
+	/**
+	 * @return the styleOptions
+	 */
+	public String getStyleOptions() {
+		return styleOptions;
+	}
+
+	/**
+	 * @param styleOptions the styleOptions to set
+	 */
+	public void setStyleOptions(String styleOptions) {
+		this.styleOptions = styleOptions;
+	}
+	
+	//-------------------------------------------------------------
+	
+	public static String replaceSpecialCharacters(String val) {
+
+		StringBuilder sB = new StringBuilder();
+		
+		char[] string2char = val.toCharArray();
+		
+		ArrayList<Character> specialCharacters = getSpecialCharacters();
+		
+		for (Character c : string2char) {
+			
+			if (specialCharacters.contains(c)) {
+				sB.append("\\").append(c);
+			} else {
+				sB.append(c);
+			}
+		}
+		return sB.toString();
+	}
+	
+	public static ArrayList<Character> getSpecialCharacters() {
+		ArrayList<Character> specialCharacters = new ArrayList<Character>();
+		
+		specialCharacters.add(new Character('\\'));
+		specialCharacters.add(new Character('#'));
+		specialCharacters.add(new Character('$'));
+		specialCharacters.add(new Character('%'));
+		specialCharacters.add(new Character('^'));
+		specialCharacters.add(new Character('&'));
+		specialCharacters.add(new Character('_'));
+		specialCharacters.add(new Character('{'));
+		specialCharacters.add(new Character('}'));
+		specialCharacters.add(new Character('~'));
+
+		return specialCharacters;
 	}
 }
