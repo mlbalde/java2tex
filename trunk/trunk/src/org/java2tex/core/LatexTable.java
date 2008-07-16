@@ -80,7 +80,6 @@ public class LatexTable {
 		this.caption = caption;
 		this.nRows = rows;
 		this.nCols = cols;
-		tableArray = new String[rows][cols];
 	}
 
 	public void alignColumns(char cAlign) throws Java2TeXException {
@@ -164,8 +163,9 @@ public class LatexTable {
 	 * </UL>
 	 *    
 	 * @return the LaTeX source representation of this table. 
+	 * @throws Java2TeXException 
 	 */
-	public String getLatex() {
+	public String getLatex() throws Java2TeXException {
 	
 		//If there is anything in the buffer, erase it
 		if (latex.length() > 0) {
@@ -176,40 +176,44 @@ public class LatexTable {
 			
 		} else {
 			
-			initLatex();
-			
-			addHorizontalLine();
-
-			if ( headers != null && headers.length > 0) {
-				printHeaders();
-			}
-			
-			if ( hasHorizontalLines()) {
+			if ( tableArray != null ) {
+				initLatex();
+				
 				addHorizontalLine();
-			}
-			
-			int dummyColumnCount=0;
-			
-			for (String[] rows : tableArray) {
+	
+				if ( headers != null && headers.length > 0) {
+					printHeaders();
+				}
 				
-				dummyColumnCount=0;
+				if ( hasHorizontalLines()) {
+					addHorizontalLine();
+				}
 				
-				for (String cell : rows) {
+				int dummyColumnCount=0;
+				
+				for (String[] rows : tableArray) {
 					
-					if (dummyColumnCount > 0) {
-						insert(" & "+cell);
-					} else {
-						insert(cell);
+					dummyColumnCount=0;
+					
+					for (String cell : rows) {
+						
+						if (dummyColumnCount > 0) {
+							insert(" & "+cell);
+						} else {
+							insert(cell);
+						}
+						dummyColumnCount++;
 					}
-					dummyColumnCount++;
-				}
-				
-				if (this.hasHorizontalLines()) {
-					add("\\\\ \\hline");
-				} else {
-					add("\\\\");
-				}
-			}			
+					
+					if (this.hasHorizontalLines()) {
+						add("\\\\ \\hline");
+					} else {
+						add("\\\\");
+					}
+				}			
+			} else {
+				throw new Java2TeXException("The text array is NULL. Did you load your data?");
+			}
 		}
 		
 		// This part is common; whether we added the content manually or not, 
@@ -353,11 +357,15 @@ public class LatexTable {
 	}
 
 	public void setValues(String[][] values) {
+		
 		if (values.length > nRows) {
 			log.error("You passed an array that exceeds the specified number of nodes in the constructor!");
 			log.warn("The table will contain the first "+nRows+" number of rows, as specified in the constructor.");
 		}
-		
+
+		//Postpone the initialization; do not initialize it unless it is needed
+		tableArray = new String[nRows][nCols];
+
 		int i=0;
 		for (@SuppressWarnings("unused")
 		String[] rows : values) {
