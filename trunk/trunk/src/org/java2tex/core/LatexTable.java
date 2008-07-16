@@ -22,6 +22,8 @@
  */
 package org.java2tex.core;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 
 
@@ -41,20 +43,27 @@ public class LatexTable {
 	
 	private static final Logger log = Logger.getLogger(LatexTable.class);
 
+	private static volatile int maxRowsPerPage=32;
+	
 	/** 
 	 * This ID is set by the <CODE>LatexDocument</CODE>, it can be used for
 	 * reference of the table from anywhere else inside the document.
 	 */ 
 	private String id=null;
 	
+	// GENERAL
 	private int nRows;
 	private int nCols;
-	
 	private String caption=null;
 	
+	// COLUMNS
 	private StringBuilder cAlignment=new StringBuilder();
+	private ArrayList<ColumnMeta> columnMeta=null;
+	
+	// HEADERS
 	private String[] headers;
 	
+	// BODY
 	private String[][] tableArray;
 
 	private StringBuilder latex = new StringBuilder(); 
@@ -123,53 +132,151 @@ public class LatexTable {
 			throw new Java2TeXException("The text array is NULL. Did you load your data?");
 		}
 	}
+	
+	/**
+	 * You can create a LaTeX table manually or <i>in bulk</i> (by building the <tt>tableArray</tt>).
+	 *  
+	 * This auxiliary method provides the common initialization of the LaTeX source for the table.
+	 * 
+	 */
+	public void initLatex() {
+		if ( nRows > getMaxRowsPerPage() ) {
+			insert("\\begin{longtable}");
+		} else {
+			insert("\\begin{tabular}");
+		}
+		add(getColumnAlignment());		
+	}
 
+	/**
+	 * This method contains a number of logical steps for building the LaTeX source.
+	 * The following is a partial list:
+	 * <UL>
+	 *
+	 *   <LI>It checks whether we should use the <tt>tabular</tt> or the <tt>longtable</tt> environment 
+	 * by comparing the number of table rows (as defined by <tt>nRows</tt>) with the maximum number 
+	 * of rows per page parameter (as defined by <tt>maxRowsPerPage</tt>).</LI>
+	 * 
+	 *   <LI>It prints the headers if they are not <tt>NULL</tt> <B>and</B> the length of the associated
+	 *   array is greater than zero</LI>
+	 *   
+	 *   <LI>It prints horizontal lines, if <tt>horizontalLines</tt> is <tt>true</tt></LI>
+	 * </UL>
+	 *    
+	 * @return the LaTeX source representation of this table. 
+	 */
 	public String getLatex() {
 	
 		//If there is anything in the buffer, erase it
 		if (latex.length() > 0) {
-			latex.delete(0, latex.length());
-		}
-		
-		insert("\\begin{tabular}{");
-		insert(cAlignment.toString());
-		add("}");
-		
-		addHorizontalLine();
-		
-		printHeaders();
-		
-		if (this.hasHorizontalLines()) {
-			add("\\hline");
-		}
-		
-		int dummyColumnCount=0;
-		
-		for (String[] rows : tableArray) {
-			dummyColumnCount=0;
-			for (String cell : rows) {
-				if (dummyColumnCount > 0) {
-					insert(" & "+cell);
-				} else {
-					insert(cell);
-				}
-				dummyColumnCount++;
+			
+			// Nothing to build -- the table has been built manually
+
+			// We already called initLatex()
+			
+		} else {
+			
+			initLatex();
+			
+			addHorizontalLine();
+
+			if ( headers != null && headers.length > 0) {
+				printHeaders();
 			}
 			
-			if (this.hasHorizontalLines()) {
-				add("\\\\ \\hline");
-			} else {
-				add("\\\\");
+			if ( hasHorizontalLines()) {
+				addHorizontalLine();
 			}
+			
+			int dummyColumnCount=0;
+			
+			for (String[] rows : tableArray) {
+				
+				dummyColumnCount=0;
+				
+				for (String cell : rows) {
+					
+					if (dummyColumnCount > 0) {
+						insert(" & "+cell);
+					} else {
+						insert(cell);
+					}
+					dummyColumnCount++;
+				}
+				
+				if (this.hasHorizontalLines()) {
+					add("\\\\ \\hline");
+				} else {
+					add("\\\\");
+				}
+			}			
 		}
 		
+		// This part is common; whether we added the content manually or not, 
+		// we need to add the last horizontal line and close the environment
 		addHorizontalLine();
 		
-		add("\\end{tabular}");
-		
+		if ( nRows > getMaxRowsPerPage() ) {
+			add("\\end{longtable}");
+		} else {
+			add("\\end{tabular}");
+		}
+
 		return latex.toString();
 	}
 	
+	private String getColumnAlignment() {
+		
+		StringBuilder s = new StringBuilder("{");
+		
+		if ( columnMeta != null ) {
+			
+			for (int j=0; j< nCols; j++) {
+				
+				ColumnMeta colMeta = columnMeta.get(j);
+				
+				if (colMeta != null) {
+					
+					if (colMeta.hasLeftSeparator()) {
+						s.append("|");
+					}
+			
+					if (colMeta.getBackgroundColour() != null) {
+						s.append(">{\\columncolor{"+colMeta.getBackgroundColour()+"}}");
+					}
+					s.append(colMeta.getAlignment());
+
+					if (colMeta.getId() == nCols) {
+						s.append("|");
+					}
+				
+				} else {
+					// If the column META information about the alignment was not set 
+					// for this column then use the default
+					s.append("|c|");
+				}
+			}
+			
+		} else {
+			
+			if ( cAlignment != null && cAlignment.length() > 0) {
+				
+				s.append(cAlignment.toString());
+				
+			} else {
+				
+				s.append("|");
+				for (int j=0; j < nCols; j++) {
+					s.append("l|");
+				}
+			}
+		}
+		
+		s.append("}");
+		
+		return s.toString();
+	}
+
 	private void printHeaders() {
 		int dummyColumnCount=0;
 
@@ -192,7 +299,52 @@ public class LatexTable {
 		add("\\hline");
 	}
 	
-	private void add(String txt) {
+	/**
+	 * This method allows us to draw a horizontal line that spans only
+	 * a part of the table. In particular, it starts drawing a horizontal
+	 * line from column <tt>start</tt> until the end of the table columns.
+	 * 
+	 * @param start
+	 */
+	public void addHorizontalLine(int start) {
+		add("\\cline{"+start+"-"+nCols+"}");
+	}
+	
+	/**
+	 * This method allows us to draw a horizontal line that spans only
+	 * a part of the table. In particular, it starts drawing a horizontal
+	 * line from column <tt>start</tt> to column <tt>end</tt>.
+	 *  
+	 * @param start
+	 * @param end
+	 */
+	public void addHorizontalLine(int start,int end) {
+		add("\\cline{"+start+"-"+end+"}");
+	}
+	
+	/**
+	 * This method simply adds the LaTeX "end of row" mark, i.e. "\\"
+	 */
+	public void endRow() {
+		add(" \\\\ ");
+	}
+	
+	public void endColumn() {
+		insert(" & ");
+	}
+	
+	public void add(String[] rowCells) {
+		int i=1;
+		for (String txt : rowCells) {
+			insert(txt);
+			if (i < rowCells.length) {
+				endColumn();
+			}
+			i++;
+		}
+	}
+	
+	public void add(String txt) {
 		latex.append(txt).append("\n");
 	}
 
@@ -221,6 +373,182 @@ public class LatexTable {
 		}
 	}
 	
+	/**
+	 * This method allows us to merge the cells of outer columns that span several inner columns. 
+	 * 
+	 * It checks if the number of rows exceeds the total number of columns of this table.
+	 *  
+	 * @param columnSpan
+	 * @param alignment
+	 * @param columnName
+	 * @throws Java2TeXException
+	 */
+	public void addMultiColumn(int columnSpan, Character alignment, String columnName) throws Java2TeXException {
+	
+		if (columnSpan > nCols) {
+		
+			throw new Java2TeXException("Invalid argument value for \"columnSpan\". " +
+					"It cannot exceed "+nCols+" columns!");
+		}
+				
+		insert("\\multicolumn{"+columnSpan+"}{|"+alignment+"|}{"+columnName+"}");
+	}
+	
+	/**
+	 * This method adds empty cells across many columns. It is useful for creating the
+	 * empty space at the top left corner of a cross tabulation. 
+	 * 
+	 * It checks if the number of rows exceeds the total number of columns of this table
+	 * 
+	 * @param columnSpan
+	 * @throws Java2TeXException
+	 */
+	public void addMultiColumn(int columnSpan) throws Java2TeXException {
+		
+		if (columnSpan > nCols) {
+		
+			throw new Java2TeXException("Invalid argument value for \"columnSpan\". It cannot exceed "+nCols+" columns!");
+		}
+		
+		insert("\\multicolumn{"+columnSpan+"}{c}{}");
+	}
+	
+	/**
+	 * This method adds empty cells across many columns. It is useful for creating the
+	 * empty space at the top left corner of a cross tabulation. 
+	 * 
+	 * It checks if the number of rows exceeds the total number of columns of this table
+	 * 
+	 * @param columnSpan
+	 * @throws Java2TeXException
+	 */
+	public void addMultiColumn(int columnSpan, boolean addVerticalSeparator) throws Java2TeXException {
+		
+		if (columnSpan > nCols) {
+		
+			throw new Java2TeXException("Invalid argument value for \"columnSpan\". It cannot exceed "+nCols+" columns!");
+		}
+		
+		insert("\\multicolumn{"+columnSpan+"}{c|}{}");
+	}
+	
+	public void addMultiColumn(ColumnMeta c) throws Java2TeXException {
+	
+		StringBuilder txt = new StringBuilder("\\multicolumn{");
+		if ( c.getColumnSpan() > nCols) {
+			
+			throw new Java2TeXException("Invalid argument value for \"columnSpan\". It cannot exceed "+nCols+" columns!");
+			
+		} else if ( c.getColumnSpan() < 2 ) {
+			
+			throw new Java2TeXException("Invalid argument value for \"columnSpan\". It must be greater than 1!");
+		}
+		
+		txt.append(c.getColumnSpan());
+		txt.append("}{");
+		if ( c.getBackgroundColour() != null ) {
+			txt.append(">\\columncolor{").append(c.getBackgroundColour()).append("}");
+		} 
+		
+		txt.append(c.getAlignment()).append("}");
+		
+		txt.append("{");
+		if ( c.getForegroundColor() != null ) {
+			txt.append("\\color{").append(c.getForegroundColor()).append("}\textsf{");
+			txt.append(c.getLabel());
+			txt.append("}}");
+		} else {
+			txt.append(c.getLabel());
+			txt.append("}");
+		}
+		
+		insert(txt.toString());
+	}
+	
+	/**
+	 * This method is useful for cross tabulation.
+	 * It merges the cells of multiple rows.
+	 * 
+	 * There is a heuristic involved here.
+	 * 
+	 * In order to get clean LaTeX implementations for the crosstabs, we resort to entering empty values
+	 * for entries that correspond to multi-level information. This will work only for uniformly distributed
+	 * nodes up to 2 levels.
+	 * 
+	 * TODO: Generalize it for arbitrary tree structure
+	 * 
+	 * @param rowSpan
+	 * @param rowName
+	 * @throws Java2TeXException
+	 */
+	public void addMultiRowCell(int[] rowSpan, String[][] cellContent) throws Java2TeXException {
+		
+		StringBuffer txt = new StringBuffer("\\multirow{");
+		
+		int depth = rowSpan.length;
+
+		int numberOfLeafNodes=1;
+		for (int i=0; i<depth; i++) {
+			if ( rowSpan[i] <= 0) {
+				throw new Java2TeXException("The cardinality for each level of the row span " +
+						"should be greater than zero!\n Found: "+rowSpan[i]+" for i= "+i);
+			}
+			numberOfLeafNodes *=rowSpan[i];
+		}
+		
+		if ( numberOfLeafNodes > nRows) {
+			throw new Java2TeXException("Row span is greater than the table row size ("+nRows+")");
+		} else {
+			log.info("One row that spans "+numberOfLeafNodes+" rows");
+		}
+		
+		int[] lidx = new int[numberOfLeafNodes];
+		int[] dummy = new int[depth];
+		for (int k=0; k<depth;k++) {
+			dummy[k] = rowSpan[k]; 
+		}
+
+		//TODO: here, we could obviously use a recursive method
+		//      For now, we limit it to 2 levels
+		for (int i=0; i < numberOfLeafNodes; i++) {
+			dummy[0]--;
+			if (dummy[0] > 0) {
+				lidx[i] = depth + 1;
+			} else {
+				dummy[0]=rowSpan[0];
+				dummy[1]--;
+				if (dummy[1] > 0) {
+					lidx[i] = depth;
+				} else {
+					dummy[1]=rowSpan[1];
+					lidx[i] = depth-1;
+				}
+			}
+		}
+
+		txt.append(numberOfLeafNodes).append("}{*}{");
+		txt.append(cellContent[0][0]).append("}");
+		for (int j=1; j < nCols; j++) {
+			txt.append(" & ").append(cellContent[0][j]);
+		}
+		
+		txt.append("\\\\ \\cline{"+(depth+1)+"-"+nCols+"} \n");
+		
+		for (int i=1; i < numberOfLeafNodes; i++) {
+			
+			for (int j=1; j < nCols; j++) { //Even if the [i][0] element has a value, we must ignore it
+				
+				txt.append("  & ").append(cellContent[i][j]);
+			}
+			txt.append("\\\\ ");				
+					
+			if ( hasHorizontalLines()) {
+				txt.append("\\cline{"+lidx[i]+"-"+nCols+"} \n");
+			}
+		}
+		add(txt.toString());
+	}
+		
 	public void addRow(int cursor, String[] row) throws Java2TeXException {
 		
 		if (cursor >= nRows) {
@@ -303,6 +631,94 @@ public class LatexTable {
 	 */
 	public void setHeaders(String[] headers) {
 		this.headers = headers;
+	}
+
+	/**
+	 * @return the columnMeta
+	 */
+	public ArrayList<ColumnMeta> getColumnMeta() {
+		return columnMeta;
+	}
+
+	/**
+	 * @param columnMeta the columnMeta to set
+	 */
+	public void setColumnMeta(ArrayList<ColumnMeta> columnMeta) {
+		this.columnMeta = columnMeta;
+	}
+
+	public void addColumn(ColumnMeta c) {
+		columnMeta.add(c);
+	}
+	
+	/**
+	 * Convenience method for adding a range of columns with default values.
+	 * It should be very useful for tables with many columns, only few of which need to be customized
+	 * 
+	 * @param begin
+	 * @param end
+	 */
+	public void addColumn(int begin,int end) {
+		for (int i=begin; i < end; i++) {
+			addColumn(new ColumnMeta(i));
+		}
+	}
+	
+	/**
+	 * Convenience method for adding a range of columns with given alignment.
+	 * It should be very useful for tables with many columns, only few of which need to be customized
+	 * 
+	 * @param begin is the first index of the columns 
+	 * @param end is the last index of the columns
+	 * @param alignment is the alignment that all columns from 
+	 * index <tt>begin</tt> to <tt>end</tt> should have
+	 */
+	public void addColumn(int begin,int end, char alignment) {
+		for (int i=begin; i <= end; i++) {
+			addColumn(new ColumnMeta(i,alignment));
+		}
+	}
+	
+	/**
+	 * @return the nRows
+	 */
+	public int getNRows() {
+		return nRows;
+	}
+
+	/**
+	 * @return the nCols
+	 */
+	public int getNCols() {
+		return nCols;
+	}
+
+	/**
+	 * @return the cAlignment
+	 */
+	public StringBuilder getCAlignment() {
+		return cAlignment;
+	}
+
+	/**
+	 * @return the tableArray
+	 */
+	public String[][] getTableArray() {
+		return tableArray;
+	}
+
+	/**
+	 * @return the maxRowsPerPage
+	 */
+	public static int getMaxRowsPerPage() {
+		return maxRowsPerPage;
+	}
+
+	/**
+	 * @param maxRowsPerPage the maxRowsPerPage to set
+	 */
+	public static void setMaxRowsPerPage(int maxRowsPerPage) {
+		LatexTable.maxRowsPerPage = maxRowsPerPage;
 	}
 
 }
