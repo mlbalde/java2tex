@@ -511,19 +511,7 @@ public class LatexTable {
 		//TODO: here, we could obviously use a recursive method
 		//      For now, we limit it to 2 levels
 		for (int i=0; i < numberOfLeafNodes; i++) {
-			dummy[0]--;
-			if (dummy[0] > 0) {
-				lidx[i] = depth + 1;
-			} else {
-				dummy[0]=rowSpan[0];
-				dummy[1]--;
-				if (dummy[1] > 0) {
-					lidx[i] = depth;
-				} else {
-					dummy[1]=rowSpan[1];
-					lidx[i] = depth-1;
-				}
-			}
+			lidx[i] = getDepth(dummy,rowSpan,0);
 		}
 
 		txt.append(numberOfLeafNodes).append("}{*}{");
@@ -549,6 +537,21 @@ public class LatexTable {
 		add(txt.toString());
 	}
 		
+	private int getDepth(int[] values, int[] rowSpan, int cursor) {
+		
+		if ( (rowSpan.length -cursor) > 0) {
+			values[cursor]--;
+			if (values[cursor]>0) {
+				return rowSpan.length + 1 -cursor;
+			} else {
+				values[cursor]=rowSpan[cursor];
+				return getDepth(values,rowSpan,cursor+1);
+			}
+		} else {
+			return rowSpan.length-1;
+		}
+	}
+	
 	public void addRow(int cursor, String[] row) throws Java2TeXException {
 		
 		if (cursor >= nRows) {
