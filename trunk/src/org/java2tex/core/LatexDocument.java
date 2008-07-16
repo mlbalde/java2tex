@@ -243,8 +243,9 @@ public class LatexDocument {
 		latex.append("\\documentclass["+this.getStyleOptions());
 		latex.append("]{"+getDocumentStyle()+"}\n");
 		latex.append("\\usepackage{lscape}\n");
-		latex.append("\\usepackage{amsmath,amssymb,amsfonts} % Typical maths resource packages");
-		latex.append("\\usepackage{multicol}");
+		latex.append("\\usepackage{amsmath,amssymb,amsfonts} % Typical maths resource packages \n");
+		latex.append("\\usepackage{multicol}\n");
+		latex.append("\\usepackage{multirow}\n");
 		latex.append("\\usepackage{thumbpdf}\n");
 		latex.append("\\usepackage{makeidx}\n");
 		latex.append("\\usepackage[pdftex,\n");
@@ -261,13 +262,13 @@ public class LatexDocument {
 		latex.append("             pdfpagemode=None,\n");
 		latex.append("             bookmarksopen=true]{hyperref}\n");
 		latex.append("\\usepackage[pdftex]{color,graphicx}\n");
-		latex.append("\\parindent 1cm");
-		latex.append("\\parskip 0.2cm");
-		latex.append("\\topmargin 0.2cm");
-		latex.append("\\oddsidemargin 1cm");
-		latex.append("\\evensidemargin 0.5cm");
-		latex.append("\\textwidth 15cm");
-		latex.append("\\textheight 21cm");
+		latex.append("\\parindent 1cm \n");
+		latex.append("\\parskip 0.2cm \n");
+		latex.append("\\topmargin 0.2cm \n");
+		latex.append("\\oddsidemargin 1cm \n");
+		latex.append("\\evensidemargin 0.5cm \n");
+		latex.append("\\textwidth 15cm \n");
+		latex.append("\\textheight 21cm \n");
 		latex.append("\\definecolor{rltred}{rgb}{0.75,0,0}\n");
 		latex.append("\\definecolor{rltgreen}{rgb}{0,0.5,0}\n");
 		latex.append("\\definecolor{rltblue}{rgb}{0,0,0.75}\n");
@@ -291,21 +292,21 @@ public class LatexDocument {
 		
 		latex.append("\\maketitle\n");
 		
-		latex.append("\\addcontentsline{toc}{chapter}{Contents}");
-		latex.append("\\pagenumbering{roman}");
-		latex.append("\\tableofcontents\n");
+		latex.append("\\addcontentsline{toc}{chapter}{Contents} \n");
+		latex.append("\\pagenumbering{roman} \n");
+		latex.append("\\tableofcontents \n");
 
 		if (numberOfFigures > 0) {
-			latex.append("\\listoffigures\n");			
+			latex.append("\\listoffigures \n");			
 		}
 
 		if (numberOfTables > 0) {
-			latex.append("\\listoftables\n");			
+			latex.append("\\listoftables \n");			
 		}
 
 		latex.append(getBody());
 
-		latex.append("\\end{document}\n");
+		latex.append("\\end{document} \n");
 
 		return latex.toString();
 	}
