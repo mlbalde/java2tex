@@ -166,8 +166,9 @@ public class LatexDocument {
 	/**
 	 * 
 	 * @param table
+	 * @throws Java2TeXException 
 	 */
-	public void addTable(LatexTable table) {
+	public void addTable(LatexTable table) throws Java2TeXException {
 		
 		if (table.isLandscape()) {
 			add("\\begin{landscape}");
