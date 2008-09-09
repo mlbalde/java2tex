@@ -227,7 +227,7 @@ public class LatexProcessor {
 		filename.append(System.getProperty("file.separator"));
 		
 		String title = doc.getTitle().replace('\u0020','-');
-		filename.append(title).append("-").append(System.currentTimeMillis()).append(".tex");
+		filename.append(title);
 
 		//Save it for later
 		doc.setFilename(filename.toString());
