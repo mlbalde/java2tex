@@ -77,9 +77,12 @@ public class LatexTable {
 	 * @param rows
 	 */
 	public LatexTable(String caption, int rows, int cols) {
+		
 		this.caption = caption;
 		this.nRows = rows;
 		this.nCols = cols;
+		
+		tableArray = new String[nRows][nCols];
 	}
 
 	public void alignColumns(char cAlign) throws Java2TeXException {
@@ -362,9 +365,6 @@ public class LatexTable {
 			log.error("You passed an array that exceeds the specified number of nodes in the constructor!");
 			log.warn("The table will contain the first "+nRows+" number of rows, as specified in the constructor.");
 		}
-
-		//Postpone the initialization; do not initialize it unless it is needed
-		tableArray = new String[nRows][nCols];
 
 		int i=0;
 		for (@SuppressWarnings("unused")
