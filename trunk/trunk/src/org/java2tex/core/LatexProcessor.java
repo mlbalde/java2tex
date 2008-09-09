@@ -225,9 +225,7 @@ public class LatexProcessor {
 		// Create the file and store it on the disk
 		StringBuilder filename = new StringBuilder(getLatexRootDir());
 		filename.append(System.getProperty("file.separator"));
-		
-		String title = doc.getTitle().replace('\u0020','-');
-		filename.append(title);
+		filename.append(doc.getFilename());
 
 		//Save it for later
 		doc.setFilename(filename.toString());
