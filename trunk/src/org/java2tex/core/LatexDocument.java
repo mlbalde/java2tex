@@ -67,6 +67,8 @@ public class LatexDocument {
 	 */
 	private String documentStyle = "report";
 	
+	private ArrayList<String> packages;
+	
 	/**
 	 * The options for the different styles are:
 	 *
@@ -90,17 +92,32 @@ public class LatexDocument {
 	
 	private String filename;
 	
+	private String subject = null;
+	
+	private String keywords = null;
+	
+	private boolean hasCustomPdfPackage=true;
+	
 	public LatexDocument() {		
-		log.debug("Creating a LaTeX document ...");
-		this.body = new StringBuffer();		
+		this("");
 	}
 	
 	public LatexDocument(String title) {
 	
-		log.debug("Creating a LaTeX document with title...");
+		log.debug("Creating a LaTeX document with title: "+title);
 		
 		this.title = title;
 		this.body = new StringBuffer();
+		this.packages = new ArrayList<String>();
+		
+		packages.add("\\usepackage[utf8]{inputenc}");
+		packages.add("\\usepackage{lscape}\n");
+		packages.add("\\usepackage{amsmath,amssymb,amsfonts}\n");
+		packages.add("\\usepackage{multicol}\n");
+		packages.add("\\usepackage{multirow}\n");
+		packages.add("\\usepackage{thumbpdf}\n");
+		packages.add("\\usepackage{makeidx}\n");
+		packages.add("\\usepackage[pdftex]{color,graphicx}\n");
 	}
 	
 	/**
@@ -237,32 +254,45 @@ public class LatexDocument {
 		insert("\\index{"+idx+"}");
 	}
 	
-	public String initLatex() {
+	private void customPdfPackage() {
 		
-		StringBuilder latex = new StringBuilder(); 
-		
-		latex.append("\\documentclass["+this.getStyleOptions());
-		latex.append("]{"+getDocumentStyle()+"}\n");
-		latex.append("\\usepackage{lscape}\n");
-		latex.append("\\usepackage{amsmath,amssymb,amsfonts} % Typical maths resource packages \n");
-		latex.append("\\usepackage{multicol}\n");
-		latex.append("\\usepackage{multirow}\n");
-		latex.append("\\usepackage{thumbpdf}\n");
-		latex.append("\\usepackage{makeidx}\n");
-		latex.append("\\usepackage[pdftex,\n");
+		StringBuilder latex = new StringBuilder("\\usepackage[pdftex,\n");
 		latex.append("             colorlinks=true,\n");
 		latex.append("             urlcolor=rltblue,       % \\href{...}{...} external (URL)\n");
 		latex.append("             filecolor=rltgreen,     % \\href{...} local file\n");
 		latex.append("             linkcolor=rltred,       % \\ref{...} and \\pageref{...}\n");
 		latex.append("             pdftitle={"+title+"},\n");
 		latex.append("             pdfauthor={"+author+"},\n");
-		latex.append("             pdfsubject={Just a test},\n");
-		latex.append("             pdfkeywords={test, testing, testable stuff},\n");
+		latex.append("             pdfsubject={"+subject+"},\n");
+		latex.append("             pdfkeywords={"+keywords+"},\n");
 		latex.append("             pdfproducer={pdfLaTeX},\n");
 		latex.append("             pagebackref,\n");
 		latex.append("             pdfpagemode=None,\n");
 		latex.append("             bookmarksopen=true]{hyperref}\n");
-		latex.append("\\usepackage[pdftex]{color,graphicx}\n");
+
+		packages.add(latex.toString());
+	}
+	
+	public void usePackage(String val) {
+		packages.add(val);
+	}
+	
+	public String initLatex() {
+		
+		StringBuilder latex = new StringBuilder(); 
+		
+		latex.append("\\documentclass["+this.getStyleOptions());
+		latex.append("]{"+getDocumentStyle()+"}\n");
+		
+		//Add packages
+		if (hasCustomPdfPackage()) {
+			customPdfPackage();
+		}
+		
+		for (String latexPackage : packages) {
+			latex.append(latexPackage);
+		}
+		
 		latex.append("\\parindent 1cm \n");
 		latex.append("\\parskip 0.2cm \n");
 		latex.append("\\topmargin 0.2cm \n");
@@ -442,5 +472,75 @@ public class LatexDocument {
 		specialCharacters.add(new Character('~'));
 
 		return specialCharacters;
+	}
+
+	/**
+	 * @return the packages
+	 */
+	public ArrayList<String> getPackages() {
+		return packages;
+	}
+
+	/**
+	 * @param packages the packages to set
+	 */
+	public void setPackages(ArrayList<String> packages) {
+		this.packages = packages;
+	}
+
+	/**
+	 * @return the subject
+	 */
+	public String getSubject() {
+		return subject;
+	}
+
+	/**
+	 * @param subject the subject to set
+	 */
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	/**
+	 * @return the keywords
+	 */
+	public String getKeywords() {
+		return keywords;
+	}
+
+	/**
+	 * @param keywords the keywords to set
+	 */
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
+	}
+
+	/**
+	 * @return the hasCustomPdfPackage
+	 */
+	public boolean hasCustomPdfPackage() {
+		return hasCustomPdfPackage;
+	}
+
+	/**
+	 * @param hasCustomPdfPackage the hasCustomPdfPackage to set
+	 */
+	public void useCustomPdfPackage(boolean hasCustomPdfPackage) {
+		this.hasCustomPdfPackage = hasCustomPdfPackage;
+	}
+
+	/**
+	 * @return the numberOfFigures
+	 */
+	public int getNumberOfFigures() {
+		return numberOfFigures;
+	}
+
+	/**
+	 * @return the numberOfTables
+	 */
+	public int getNumberOfTables() {
+		return numberOfTables;
 	}
 }
