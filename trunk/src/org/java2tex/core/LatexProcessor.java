@@ -66,7 +66,7 @@ public class LatexProcessor {
 	 */
 	public LatexProcessor() throws Java2TeXException {
 		
-		this.setLatexRootDir(null);
+		this.setupLatexRootDir(null);
 		log.info("Created LatexProcessor instance ...");		
 	}
 	
@@ -105,7 +105,7 @@ public class LatexProcessor {
 	 * @param rootDir is the root directory for storing the generated LaTeX files
 	 * @throws Java2TeXException 
 	 */
-	public void setLatexRootDir(String rootDir) throws Java2TeXException {
+	public void setupLatexRootDir(String rootDir) throws Java2TeXException {
 
 		if (rootDir == null || rootDir.length() < 2) {
 
@@ -181,7 +181,7 @@ public class LatexProcessor {
 
 		if (os.startsWith("Windows")) {
 
-			log.warn("***  This will not work without installing MikTeX!  ***");
+			log.warn("***  Make sure that you installed MikTeX. This will not work without installing MikTeX!  ***");
 		
 		} else {
 		
@@ -193,6 +193,7 @@ public class LatexProcessor {
 		log.debug("Output: \n" + Arrays.toString(args));
 		
 		ProcessBuilder pb = new ProcessBuilder(args);
+		
 		pb.directory(new File(getLatexRootDir()));
 
 		run(pb);
@@ -222,15 +223,13 @@ public class LatexProcessor {
 	}
 
 	public void save(LatexDocument doc) throws Java2TeXException {
+		
 		// Create the file and store it on the disk
 		StringBuilder filename = new StringBuilder(getLatexRootDir());
 		filename.append(System.getProperty("file.separator"));
 		filename.append(doc.getFilename());
 
-		//Save it for later
-		doc.setFilename(filename.toString());
-		
-		File file = new File(doc.getFilename());
+		File file = new File(filename.toString());
 
 		try {
 			FileWriter fw = new FileWriter(file);

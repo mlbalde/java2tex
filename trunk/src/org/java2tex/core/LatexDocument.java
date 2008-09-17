@@ -80,7 +80,7 @@ public class LatexDocument {
 	 * </OL>
 	 * If you specify more than one option, they must be separated by a comma.
 	 */
-	private String styleOptions = "12pt,a4paper,twoside,leqno";
+	private String styleOptions = "12pt,a4paper,twoside";
 	
 	private String author = "Nobody";
 	
@@ -107,16 +107,20 @@ public class LatexDocument {
 		log.debug("Creating a LaTeX document with title: "+title);
 		
 		this.title = title;
+		
+		this.filename = title+".tex";
+		
 		this.body = new StringBuffer();
+		
 		this.packages = new ArrayList<String>();
 		
-		packages.add("\\usepackage[utf8]{inputenc}");
+		packages.add("\\usepackage{thumbpdf}\n");
+		packages.add("\\usepackage{makeidx}\n");
 		packages.add("\\usepackage{lscape}\n");
 		packages.add("\\usepackage{amsmath,amssymb,amsfonts}\n");
 		packages.add("\\usepackage{multicol}\n");
 		packages.add("\\usepackage{multirow}\n");
-		packages.add("\\usepackage{thumbpdf}\n");
-		packages.add("\\usepackage{makeidx}\n");
+		packages.add("\\usepackage[utf8]{inputenc}\n");
 		packages.add("\\usepackage[pdftex]{color,graphicx}\n");
 	}
 	
@@ -284,15 +288,16 @@ public class LatexDocument {
 		latex.append("\\documentclass["+this.getStyleOptions());
 		latex.append("]{"+getDocumentStyle()+"}\n");
 		
+		for (String latexPackage : packages) {
+			latex.append(latexPackage);
+		}
 		//Add packages
 		if (hasCustomPdfPackage()) {
 			customPdfPackage();
 		}
-		
-		for (String latexPackage : packages) {
-			latex.append(latexPackage);
-		}
-		
+		latex.append("%");
+		latex.append("% --- End of package imports ---");
+		latex.append("%");
 		latex.append("\\parindent 1cm \n");
 		latex.append("\\parskip 0.2cm \n");
 		latex.append("\\topmargin 0.2cm \n");
