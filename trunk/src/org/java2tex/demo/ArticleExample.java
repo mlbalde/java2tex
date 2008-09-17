@@ -30,6 +30,7 @@ import org.java2tex.core.LatexDocument;
 import org.java2tex.core.LatexGraphics;
 import org.java2tex.core.LatexProcessor;
 import org.java2tex.core.LatexTable;
+import org.java2tex.custom.BaseDocument;
 
 /**
  * Read this class to see the current capabilities of Java2TeX.
@@ -97,15 +98,11 @@ public class ArticleExample {
 	 */
 	public static LatexDocument demo() throws Java2TeXException {
 		
-		LatexDocument doc = new LatexDocument("MyDocument");
+		BaseDocument doc = new BaseDocument("MyDocument");
 		
-		//doc.setDocumentStyle("book");
+		doc.setDocumentStyle("article");
 		
-		// We do not change the default options but if you want to try
-		// something cool and see what happens use the following:
-		//
-		// doc.setStyleOptions("11pt,a4paper,twoside,twocolumn,fleqn");
-		//
+		doc.setStyleOptions("11pt,a4paper,twoside,fleqn");
 		
 		doc.setTitle("Creating PDF reports with Java code!");
 		doc.setAuthor("Babis Marmanis");
@@ -113,19 +110,20 @@ public class ArticleExample {
 		doc.setSubject("A transformation engine that takes Java objects and creates PDF documents based on \\LaTeX");
 		doc.setNotes("This is where the notes of the user go.") ;
 		
+		doc.setLeftHeader("");
+		doc.setRightHeader(doc.getTitle());
+		doc.setCenterHeader("");
+		doc.setCenterFooter("");
+		
 		//You could use an abstract, instead of notes.
-		doc.add("\\chapter*{Notes}\\normalsize");
-		doc.add(" \\addcontentsline{toc}{chapter}{Notes}");
-		doc.add("\\pagestyle{plain}");
+		doc.add("\\vspace{1.5cm}");
+		doc.addSectionNoLabel("Notes");
+		doc.add("\\normalsize");
 		doc.add(doc.getNotes());
 		
 		doc.newPage();
 		
-		doc.add("\\pagestyle{headings}");
-		
-		doc.add("\\pagenumbering{arabic}");
-
-		doc.addChapterNoLabel("Introduction to LaTeX");
+		doc.addSection("Introduction to LaTeX");
 		
 		doc.add("\\LaTeX{} is a document preparation system for the \\TeX{} typesetting program.");
 		doc.add("It offers programmable desktop publishing features and extensive facilities ");
@@ -137,7 +135,7 @@ public class ArticleExample {
 		
 		doc.newLine();
 		
-		doc.addSectionNoLabel("Some science");
+		doc.addSection("Some science");
 		
 		doc.add("Hello Albert Einstein!");
 		doc.addIndexEntry("Einstein");
@@ -163,7 +161,7 @@ public class ArticleExample {
 		doc.add("    m &=& \\frac{m_0}{\\sqrt{1-\\frac{v^2}{c^2}}}");
 		doc.add("  \\end{eqnarray}");
 		
-		doc.addChapterNoLabel("US Politics");
+		doc.addSection("US Politics");
 		doc.add("The federal government of the United States is the centralized United States ");
 		doc.add("governmental body established by the United States Constitution. The federal government ");
 		doc.add("has three branches: the legislature, executive, and judiciary. Through a system of ");
@@ -178,7 +176,7 @@ public class ArticleExample {
 		doc.add("government as a whole are limited by the Constitution, which leaves a great deal ");
 		doc.add("of authority to the individual states.");
 
-		doc.addSectionNoLabel("US Presidents");
+		doc.addSection("US Presidents");
 
 		LatexTable table = new LatexTable("Former U.S. Presidents (1961-1981)",4,4);
 		

@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
  * @since   <tt>0.1</tt> 
  * @version <tt>0.1</tt>
  */
-public class LatexDocument {
+public abstract class LatexDocument {
 
 /*
  * TODO: this is the bare bones implementation. There is a plethora of attributes that 
@@ -65,9 +65,9 @@ public class LatexDocument {
 	 *    <LI>book</LI>
 	 *  </UL>
 	 */
-	private String documentStyle = "report";
+	private String documentStyle;
 	
-	private ArrayList<String> packages;
+	protected ArrayList<String> packages;
 	
 	/**
 	 * The options for the different styles are:
@@ -80,23 +80,21 @@ public class LatexDocument {
 	 * </OL>
 	 * If you specify more than one option, they must be separated by a comma.
 	 */
-	private String styleOptions = "12pt,a4paper,twoside";
+	private String styleOptions;
 	
-	private String author = "Nobody";
+	private String author;
 	
-	private String title="No title";
+	private String title;
 	
-	private String notes=null;
+	private String notes;
 	
 	private StringBuffer body;
 	
 	private String filename;
 	
-	private String subject = null;
+	private String subject;
 	
-	private String keywords = null;
-	
-	private boolean hasCustomPdfPackage=true;
+	private String keywords;
 	
 	public LatexDocument() {		
 		this("");
@@ -112,16 +110,7 @@ public class LatexDocument {
 		
 		this.body = new StringBuffer();
 		
-		this.packages = new ArrayList<String>();
-		
-		packages.add("\\usepackage{thumbpdf}\n");
-		packages.add("\\usepackage{makeidx}\n");
-		packages.add("\\usepackage{lscape}\n");
-		packages.add("\\usepackage{amsmath,amssymb,amsfonts}\n");
-		packages.add("\\usepackage{multicol}\n");
-		packages.add("\\usepackage{multirow}\n");
-		packages.add("\\usepackage[utf8]{inputenc}\n");
-		packages.add("\\usepackage[pdftex]{color,graphicx}\n");
+		this.packages = new ArrayList<String>();		
 	}
 	
 	/**
@@ -159,64 +148,18 @@ public class LatexDocument {
 	 *  
 	 * @param graphics
 	 */
-	public void addFigure(LatexGraphics graphics) {
-		
-		if (graphics.isLandscape()) {
-			add("\\begin{landscape}");
-		}
-		
-		add("\\begin{figure}[!htpb]");
-		
-		add(graphics.getLatex());
-		
-		add("\\caption{"+graphics.getCaption()+"}");
-		
-		String figureId = "FigureId-"+numberOfFigures;
-		add("\\label{"+figureId+"}");
-		graphics.setId(figureId);
-		
-		add("\\end{figure}");
-
-		if (graphics.isLandscape()) {
-			add("\\end{landscape}");
-		}
-		
-		numberOfFigures++;
-	}
+	public abstract void addFigure(LatexGraphics graphics); 
+	
+	public abstract String initLatex();
+	
+	public abstract String getLatex();
 	
 	/**
 	 * 
 	 * @param table
 	 * @throws Java2TeXException 
 	 */
-	public void addTable(LatexTable table) throws Java2TeXException {
-		
-		if (table.isLandscape()) {
-			add("\\begin{landscape}");
-		}
-		
-		/*
-		 * TODO: Temporarily the location is [!htpb], however, this can be
-		 * made configurable in the <CODE>LatexTable</CODE> class.  
-		 */
-		add("\\begin{table}[!htpb]");
-		
-		add(table.getLatex());
-		
-		add("\\caption{"+table.getCaption()+"}");
-		
-		String tableId = "TableId-"+numberOfTables;
-		add("\\label{"+tableId+"}");
-		table.setId(tableId);
-		
-		add("\\end{table}");
-		
-		if (table.isLandscape()) {
-			add("\\end{landscape}");
-		}
-		
-		numberOfTables++;
-	}
+	public abstract void addTable(LatexTable table);
 	
 	public void addChapter(String cTitle) {
 		add("\\chapter{"+cTitle+"}");
@@ -224,7 +167,6 @@ public class LatexDocument {
 	
 	public void addChapterNoLabel(String cTitle) {
 		add("\\chapter*{"+cTitle+"}");
-		add(" \\addcontentsline{toc}{chapter}{"+cTitle+"}");
 	}
 	
 	public void addSection(String sTitle) {
@@ -233,12 +175,10 @@ public class LatexDocument {
 	
 	public void addSectionNoLabel(String sTitle) {
 		add("\\section*{"+sTitle+"}");
-		add(" \\addcontentsline{toc}{section}{"+sTitle+"}");
 	}
 	
 	public void addSubsection(String ssTitle) {
 		add("\\subsection*{"+ssTitle+"}");
-		add(" \\addcontentsline{toc}{chapter}{"+ssTitle+"}");
 	}
 	
 	public void newPage() {
@@ -258,95 +198,10 @@ public class LatexDocument {
 		insert("\\index{"+idx+"}");
 	}
 	
-	private void customPdfPackage() {
-		
-		StringBuilder latex = new StringBuilder("\\usepackage[pdftex,\n");
-		latex.append("             colorlinks=true,\n");
-		latex.append("             urlcolor=rltblue,       % \\href{...}{...} external (URL)\n");
-		latex.append("             filecolor=rltgreen,     % \\href{...} local file\n");
-		latex.append("             linkcolor=rltred,       % \\ref{...} and \\pageref{...}\n");
-		latex.append("             pdftitle={"+title+"},\n");
-		latex.append("             pdfauthor={"+author+"},\n");
-		latex.append("             pdfsubject={"+subject+"},\n");
-		latex.append("             pdfkeywords={"+keywords+"},\n");
-		latex.append("             pdfproducer={pdfLaTeX},\n");
-		latex.append("             pagebackref,\n");
-		latex.append("             pdfpagemode=None,\n");
-		latex.append("             bookmarksopen=true]{hyperref}\n");
-
-		packages.add(latex.toString());
-	}
-	
 	public void usePackage(String val) {
 		packages.add(val);
 	}
 	
-	public String initLatex() {
-		
-		StringBuilder latex = new StringBuilder(); 
-		
-		latex.append("\\documentclass["+this.getStyleOptions());
-		latex.append("]{"+getDocumentStyle()+"}\n");
-		
-		for (String latexPackage : packages) {
-			latex.append(latexPackage);
-		}
-		//Add packages
-		if (hasCustomPdfPackage()) {
-			customPdfPackage();
-		}
-		latex.append("%");
-		latex.append("% --- End of package imports ---");
-		latex.append("%");
-		latex.append("\\parindent 1cm \n");
-		latex.append("\\parskip 0.2cm \n");
-		latex.append("\\topmargin 0.2cm \n");
-		latex.append("\\oddsidemargin 1cm \n");
-		latex.append("\\evensidemargin 0.5cm \n");
-		latex.append("\\textwidth 15cm \n");
-		latex.append("\\textheight 21cm \n");
-		latex.append("\\definecolor{rltred}{rgb}{0.75,0,0}\n");
-		latex.append("\\definecolor{rltgreen}{rgb}{0,0.5,0}\n");
-		latex.append("\\definecolor{rltblue}{rgb}{0,0,0.75}\n");
-		latex.append("\\title{"+getTitle()+"}\n");
-		latex.append("\\author{"+getAuthor()+"\\\\  Created on \\today }\n");
-
-		return latex.toString();
-	}
-	
-	public String getLatex() {
-		
-		StringBuilder latex = new StringBuilder(); 
-		
-		latex.append(initLatex());
-
-		latex.append("\\makeindex\n");
-		
-		latex.append("\\begin{document}\n");
-
-		//latex.append("\\setcounter{chapter}{1}");
-		
-		latex.append("\\maketitle\n");
-		
-		latex.append("\\addcontentsline{toc}{chapter}{Contents} \n");
-		latex.append("\\pagenumbering{roman} \n");
-		latex.append("\\tableofcontents \n");
-
-		if (numberOfFigures > 0) {
-			latex.append("\\listoffigures \n");			
-		}
-
-		if (numberOfTables > 0) {
-			latex.append("\\listoftables \n");			
-		}
-
-		latex.append(getBody());
-
-		latex.append("\\end{document} \n");
-
-		return latex.toString();
-	}
-
 	//--------------------------------------------------------------------------
 	// GETTERS + SETTERS
 	//--------------------------------------------------------------------------
@@ -522,20 +377,6 @@ public class LatexDocument {
 	}
 
 	/**
-	 * @return the hasCustomPdfPackage
-	 */
-	public boolean hasCustomPdfPackage() {
-		return hasCustomPdfPackage;
-	}
-
-	/**
-	 * @param hasCustomPdfPackage the hasCustomPdfPackage to set
-	 */
-	public void useCustomPdfPackage(boolean hasCustomPdfPackage) {
-		this.hasCustomPdfPackage = hasCustomPdfPackage;
-	}
-
-	/**
 	 * @return the numberOfFigures
 	 */
 	public int getNumberOfFigures() {
@@ -547,5 +388,26 @@ public class LatexDocument {
 	 */
 	public int getNumberOfTables() {
 		return numberOfTables;
+	}
+
+	/**
+	 * @return the log
+	 */
+	public static Logger getLog() {
+		return log;
+	}
+
+	/**
+	 * @param numberOfFigures the numberOfFigures to set
+	 */
+	public void setNumberOfFigures(int numberOfFigures) {
+		this.numberOfFigures = numberOfFigures;
+	}
+
+	/**
+	 * @param numberOfTables the numberOfTables to set
+	 */
+	public void setNumberOfTables(int numberOfTables) {
+		this.numberOfTables = numberOfTables;
 	}
 }
