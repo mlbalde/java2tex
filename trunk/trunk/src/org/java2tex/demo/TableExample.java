@@ -33,6 +33,7 @@ import org.java2tex.core.LatexConstants;
 import org.java2tex.core.LatexDocument;
 import org.java2tex.core.LatexProcessor;
 import org.java2tex.core.LatexTable;
+import org.java2tex.custom.BaseDocument;
 
 /**
  * An example of a cross tabulation
@@ -89,18 +90,14 @@ public class TableExample {
 	}
 
 	private static LatexDocument demo() throws Java2TeXException {
-		LatexDocument doc = new LatexDocument("MyTableDocument");
+		LatexDocument doc = new BaseDocument("MyTableDocument");
 		
-		//doc.setDocumentStyle("book");
+		doc.setDocumentStyle("article");
 		
-		// We do not change the default options but if you want to try
-		// something cool and see what happens use the following:
-		//
-		// doc.setStyleOptions("11pt,a4paper,twoside,twocolumn,fleqn");
-		//
+		doc.setStyleOptions("11pt,a4paper,twoside,fleqn");
 		
-		doc.setTitle("Document Title");
-		doc.setAuthor("Haralambos Marmanis");
+		doc.setTitle("Creating PDF documents with Java!");
+		doc.setAuthor("Babis Marmanis");
 		doc.setKeywords("java, latex");
 		doc.setSubject("A transformation engine that takes Java objects and creates PDF documents based on \\LaTeX");
 
