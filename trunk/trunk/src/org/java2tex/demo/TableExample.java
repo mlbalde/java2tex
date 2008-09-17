@@ -52,6 +52,7 @@ public class TableExample {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
 		BasicConfigurator.configure();
 
 		try {
@@ -88,7 +89,7 @@ public class TableExample {
 	}
 
 	private static LatexDocument demo() throws Java2TeXException {
-		LatexDocument doc = new LatexDocument();
+		LatexDocument doc = new LatexDocument("MyTableDocument");
 		
 		//doc.setDocumentStyle("book");
 		
@@ -100,7 +101,9 @@ public class TableExample {
 		
 		doc.setTitle("Document Title");
 		doc.setAuthor("Haralambos Marmanis");
-		
+		doc.setKeywords("java, latex");
+		doc.setSubject("A transformation engine that takes Java objects and creates PDF documents based on \\LaTeX");
+
 		doc.add("\\pagestyle{headings}");
 		
 		doc.add("\\pagenumbering{arabic}");

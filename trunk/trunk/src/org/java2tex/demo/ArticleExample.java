@@ -97,7 +97,7 @@ public class ArticleExample {
 	 */
 	public static LatexDocument demo() throws Java2TeXException {
 		
-		LatexDocument doc = new LatexDocument();
+		LatexDocument doc = new LatexDocument("MyDocument");
 		
 		//doc.setDocumentStyle("book");
 		
@@ -107,8 +107,10 @@ public class ArticleExample {
 		// doc.setStyleOptions("11pt,a4paper,twoside,twocolumn,fleqn");
 		//
 		
-		doc.setTitle("Document Title");
-		doc.setAuthor("Haralambos Marmanis");
+		doc.setTitle("Creating PDF reports with Java code!");
+		doc.setAuthor("Babis Marmanis");
+		doc.setKeywords("java, latex");
+		doc.setSubject("A transformation engine that takes Java objects and creates PDF documents based on \\LaTeX");
 		doc.setNotes("This is where the notes of the user go.") ;
 		
 		//You could use an abstract, instead of notes.
