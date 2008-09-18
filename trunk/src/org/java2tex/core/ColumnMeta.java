@@ -44,7 +44,7 @@ public class ColumnMeta {
 	 * By default it is "l", which stands for left. Other possible values
 	 * are "c" for "center" and "r" for "right". 
 	 */
-	private Character alignment=LatexConstants.CENTER;
+	private String alignment=LatexConstants.CENTER;
 	
 	/**
 	 * This value will define whether a vertical line should be present on the left of that column
@@ -68,9 +68,10 @@ public class ColumnMeta {
 	private String label=null;
 	
 	/**
+	 * This is the maximum width of the column in centimeters.
 	 * 
 	 */
-	private int maxCharWidth =-1;
+	private int maxWidth =-1;
 
 	/**
 	 * In order to span multiple columns, set this to a positive number
@@ -81,7 +82,7 @@ public class ColumnMeta {
 		this.id = id;
 	}
 
-	public ColumnMeta(int id, char alignment) {
+	public ColumnMeta(int id, String alignment) {
 		this.id = id;
 		this.alignment = alignment;
 	}
@@ -91,17 +92,17 @@ public class ColumnMeta {
 		this.hasLeftSeparator = hasLeftSeparator;
 	}
 
-	public ColumnMeta(int id, char alignment, boolean hasLeftSeparator) {
+	public ColumnMeta(int id, String alignment, boolean hasLeftSeparator) {
 		this.id = id;
 		this.alignment = alignment;
 		this.hasLeftSeparator = hasLeftSeparator;
 	}
 
-	public ColumnMeta(int id, char alignment, boolean hasLeftSeparator, int maxCharWidth) {
+	public ColumnMeta(int id, String alignment, boolean hasLeftSeparator, int maxCharWidth) {
 		this.id = id;
 		this.alignment = alignment;
 		this.hasLeftSeparator = hasLeftSeparator;
-		this.maxCharWidth = maxCharWidth;
+		this.maxWidth = maxCharWidth;
 	}
 
 	/**
@@ -121,29 +122,29 @@ public class ColumnMeta {
 	/**
 	 * @return the alignment
 	 */
-	public char getAlignment() {
+	public String getAlignment() {
 		return alignment;
 	}
 
 	/**
 	 * @param alignment the alignment to set
 	 */
-	public void setAlignment(char alignment) {
+	public void setAlignment(String alignment) {
 		this.alignment = alignment;
 	}
 
 	/**
-	 * @return the maxCharWidth
+	 * @return the maxWidth in cm
 	 */
-	public int getMaxCharWidth() {
-		return maxCharWidth;
+	public int getMaxWidth() {
+		return maxWidth;
 	}
 
 	/**
-	 * @param maxCharWidth the maxCharWidth to set
+	 * @param maxWidth the maxWidth to set in cm
 	 */
-	public void setMaxCharWidth(int maxCharWidth) {
-		this.maxCharWidth = maxCharWidth;
+	public void setMaxWidth(int maxCharWidth) {
+		this.maxWidth = maxCharWidth;
 	}
 
 	/**
