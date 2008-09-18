@@ -23,15 +23,15 @@ public class BaseDocument extends LatexDocument {
 		
 		super(title);
 		
-		packages.add("\\usepackage{fancyhdr}\n");
-		packages.add("\\usepackage{thumbpdf}\n");
-		packages.add("\\usepackage{makeidx}\n");
-		packages.add("\\usepackage{lscape}\n");
-		packages.add("\\usepackage{amsmath,amssymb,amsfonts}\n");
-		packages.add("\\usepackage{multicol}\n");
-		packages.add("\\usepackage{multirow}\n");
-		packages.add("\\usepackage[utf8]{inputenc}\n");
-		packages.add("\\usepackage[pdftex]{color,graphicx}\n");
+		packages.add("{fancyhdr}");
+		packages.add("{thumbpdf}");
+		packages.add("{makeidx}");
+		packages.add("{lscape}");
+		packages.add("{amsmath,amssymb,amsfonts}");
+		packages.add("{multicol}");
+		packages.add("{multirow}");
+		packages.add("[utf8]{inputenc}");
+		packages.add("[pdftex]{color,graphicx}");
 	}
 
 	@Override
@@ -76,18 +76,24 @@ public class BaseDocument extends LatexDocument {
 		 * TODO: Temporarily the location is [!htpb], however, this can be
 		 * made configurable in the <CODE>LatexTable</CODE> class.  
 		 */
-		add("\\begin{table}[!htpb]");
+//		add("\\begin{table}[!htpb]");
 		
 		try {
 			add(table.getLatex());
-			add("\\caption{"+table.getCaption()+"}");
+			
+			if ( table.isLongTable() ) {
+				add("\\bottomcaption{"+table.getCaption()+"}");
+			} else {
+				add("\\caption{"+table.getCaption()+"}");
+			}
 			
 			int n = this.getNumberOfTables();
 			String tableId = "TableId-"+n;
 			add("\\label{"+tableId+"}");
 			table.setId(tableId);
 			
-			add("\\end{table}");
+			//close the table syntax
+			add(table.close()); 
 			
 			if (table.isLandscape()) {
 				add("\\end{landscape}");
@@ -110,7 +116,7 @@ public class BaseDocument extends LatexDocument {
 		latex.append("]{"+getDocumentStyle()+"}\n");
 		
 		for (String latexPackage : packages) {
-			latex.append(latexPackage);
+			latex.append("\\usepackage").append(latexPackage).append("\n");
 		}
 		//Add packages
 		if (hasCustomPdfPackage()) {
