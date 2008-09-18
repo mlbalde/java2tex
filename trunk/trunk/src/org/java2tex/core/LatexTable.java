@@ -43,7 +43,7 @@ public class LatexTable {
 	
 	private static final Logger log = Logger.getLogger(LatexTable.class);
 
-	private static volatile int maxRowsPerPage=32;
+	private boolean isLongTable=false;
 	
 	/** 
 	 * This ID is set by the <CODE>LatexDocument</CODE>, it can be used for
@@ -142,8 +142,8 @@ public class LatexTable {
 	 * 
 	 */
 	public void initLatex() {
-		if ( nRows > getMaxRowsPerPage() ) {
-			insert("\\begin{longtable}");
+		if ( isLongTable() ) {
+			insert("\\begin{supertabular}");
 		} else {
 			insert("\\begin{tabular}");
 		}
@@ -223,13 +223,16 @@ public class LatexTable {
 		// we need to add the last horizontal line and close the environment
 		addHorizontalLine();
 		
-		if ( nRows > getMaxRowsPerPage() ) {
-			add("\\end{longtable}");
-		} else {
-			add("\\end{tabular}");
-		}
-
 		return latex.toString();
+	}
+	
+	public String close() {
+
+		if ( isLongTable() ) {
+			return "\\end{supertabular}";
+		} else {
+			return "\\end{tabular}";
+		}
 	}
 	
 	private String getColumnAlignment() {
@@ -391,7 +394,7 @@ public class LatexTable {
 	 * @param columnName
 	 * @throws Java2TeXException
 	 */
-	public void addMultiColumn(int columnSpan, Character alignment, String columnName) throws Java2TeXException {
+	public void addMultiColumn(int columnSpan, String alignment, String columnName) throws Java2TeXException {
 	
 		if (columnSpan > nCols) {
 		
@@ -682,9 +685,9 @@ public class LatexTable {
 	 * @param begin is the first index of the columns 
 	 * @param end is the last index of the columns
 	 * @param alignment is the alignment that all columns from 
-	 * index <tt>begin</tt> to <tt>end</tt> should have
+	 * index <tt>begin</tt> to <tt>end</tt> (inclusive) should have
 	 */
-	public void addColumn(int begin,int end, char alignment) {
+	public void addColumn(int begin,int end, String alignment) {
 		for (int i=begin; i <= end; i++) {
 			addColumn(new ColumnMeta(i,alignment));
 		}
@@ -719,17 +722,16 @@ public class LatexTable {
 	}
 
 	/**
-	 * @return the maxRowsPerPage
+	 * @return the isLongTable
 	 */
-	public static int getMaxRowsPerPage() {
-		return maxRowsPerPage;
+	public boolean isLongTable() {
+		return isLongTable;
 	}
 
 	/**
-	 * @param maxRowsPerPage the maxRowsPerPage to set
+	 * @param isLongTable the isLongTable to set
 	 */
-	public static void setMaxRowsPerPage(int maxRowsPerPage) {
-		LatexTable.maxRowsPerPage = maxRowsPerPage;
+	public void setLongTable(boolean isLongTable) {
+		this.isLongTable = isLongTable;
 	}
-
 }
