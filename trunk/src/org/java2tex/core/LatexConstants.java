@@ -34,15 +34,15 @@ public class LatexConstants {
 	/**
 	 * This character value is used for aligning the content of tables to the left
 	 */
-	public static final Character LEFT= new Character('l');
+	public static final String LEFT = "l";
 
 	/**
 	 * This character value is used for aligning the content of tables to the right
 	 */
-	public static final Character RIGHT= new Character('r');
+	public static final String RIGHT = "r";
 	
 	/**
 	 * This character value is used for aligning the content of tables to the center
 	 */
-	public static final Character CENTER= new Character('c');
+	public static final String CENTER = "c";
 }
