@@ -45,7 +45,7 @@ import org.java2tex.custom.BaseDocument;
  */
 public class TableExample {
 
-	private static final Logger log = Logger.getLogger(ArticleExample.class);
+	private static final Logger log = Logger.getLogger(TableExample.class);
 
 	private static LatexProcessor latexProc=null;
 
