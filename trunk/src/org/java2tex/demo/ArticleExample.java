@@ -29,8 +29,8 @@ import org.java2tex.core.Java2TeXException;
 import org.java2tex.core.LatexDocument;
 import org.java2tex.core.LatexGraphics;
 import org.java2tex.core.LatexProcessor;
-import org.java2tex.core.LatexTable;
 import org.java2tex.custom.BaseDocument;
+import org.java2tex.custom.SimpleTable;
 
 /**
  * Read this class to see the current capabilities of Java2TeX.
@@ -178,7 +178,7 @@ public class ArticleExample {
 
 		doc.addSection("US Presidents");
 
-		LatexTable table = new LatexTable("Former U.S. Presidents (1961-1981)",4,4);
+		SimpleTable table = new SimpleTable("Former U.S. Presidents (1961-1981)",4,4);
 		
 		table.setHeaders(new String[] {"First Name","Last Name","From", "To"});
 		table.alignColumns(new char[] {'l','l','r','r'});
