@@ -2,9 +2,9 @@ package org.java2tex.custom;
 
 import org.apache.log4j.Logger;
 import org.java2tex.core.Java2TeXException;
+import org.java2tex.core.LatexTable;
 import org.java2tex.core.LatexDocument;
 import org.java2tex.core.LatexGraphics;
-import org.java2tex.core.LatexTable;
 
 public class BaseDocument extends LatexDocument {
 	
@@ -63,44 +63,46 @@ public class BaseDocument extends LatexDocument {
 		this.setNumberOfFigures(n++);		
 	}
 	
+	/**
+	 * TODO: This method is essentially identical to the second addTable method.
+	 * Define an interface and use that to simplify the code. For example, SimpleTable
+	 * could be the interface and SimpleTable/BigTable the two implementations. 
+	 * 
+	 * @param table
+	 */
+	public void addTable(MultiPageTable table) {
+
+		log.debug("Adding table: "+table.getId());
+
+		try {
+			
+			add(table.getLatex());
+			
+		} catch (Java2TeXException j2tX) {
+			log.error("FAILED TO ADD A TABLE!");
+			log.error(j2tX.getMessage());
+		}		
+		
+	}
+
+	public synchronized String getNewTableId() {
+		
+		int n = getNumberOfTables();
+		String tableId = "TableId-"+n;
+		setNumberOfTables(n++);
+		
+		return tableId;
+	}
+	
 	@Override
 	public void addTable(LatexTable table) {
 		
 		log.debug("Adding table: "+table.getId());
 		
-		if (table.isLandscape()) {
-			add("\\begin{landscape}");
-		}
-		
-		/*
-		 * TODO: Temporarily the location is [!htpb], however, this can be
-		 * made configurable in the <CODE>LatexTable</CODE> class.  
-		 */
-//		add("\\begin{table}[!htpb]");
-		
 		try {
+			
 			add(table.getLatex());
-			
-			if ( table.isLongTable() ) {
-				add("\\bottomcaption{"+table.getCaption()+"}");
-			} else {
-				add("\\caption{"+table.getCaption()+"}");
-			}
-			
-			int n = this.getNumberOfTables();
-			String tableId = "TableId-"+n;
-			add("\\label{"+tableId+"}");
-			table.setId(tableId);
-			
-			//close the table syntax
-			add(table.close()); 
-			
-			if (table.isLandscape()) {
-				add("\\end{landscape}");
-			}
-			
-			this.setNumberOfTables(n++);
-
+						
 		} catch (Java2TeXException j2tX) {
 			log.error("FAILED TO ADD A TABLE!");
 			log.error(j2tX.getMessage());

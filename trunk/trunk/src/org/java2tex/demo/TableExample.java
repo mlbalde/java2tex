@@ -32,8 +32,8 @@ import org.java2tex.core.Java2TeXException;
 import org.java2tex.core.LatexConstants;
 import org.java2tex.core.LatexDocument;
 import org.java2tex.core.LatexProcessor;
-import org.java2tex.core.LatexTable;
 import org.java2tex.custom.BaseDocument;
+import org.java2tex.custom.SimpleTable;
 
 /**
  * An example of a cross tabulation
@@ -90,7 +90,7 @@ public class TableExample {
 	}
 
 	private static LatexDocument demo() throws Java2TeXException {
-		LatexDocument doc = new BaseDocument("MyTableDocument");
+		BaseDocument doc = new BaseDocument("MyTableExample");
 		
 		doc.setDocumentStyle("article");
 		
@@ -101,17 +101,18 @@ public class TableExample {
 		doc.setKeywords("java, latex");
 		doc.setSubject("A transformation engine that takes Java objects and creates PDF documents based on \\LaTeX");
 
-		doc.add("\\pagestyle{headings}");
+		doc.setLeftHeader("");
+		doc.setRightHeader(doc.getTitle());
+		doc.setCenterHeader("");
+		doc.setCenterFooter("");
 		
-		doc.add("\\pagenumbering{arabic}");
-
 		doc.addChapterNoLabel("Creating cross-tables with LaTeX");
 		
-
-		LatexTable table = new LatexTable("Cross-tables with LaTeX",12,13);
-
+		SimpleTable table = new SimpleTable("Cross-tables with LaTeX",12,13);
+		table.setId(doc.getNewTableId());
+		
 		// If your table is large then use the landscape mode. This method does not alter 
-		// the LaTeX source that <tt>LatexTable</tt> creates. Its value will be used later 
+		// the LaTeX source that <tt>SimpleTable</tt> creates. Its value will be used later 
 		// by the <tt>LatexDocument</tt> class, when it embeds the table in the document
 		//
 		table.setLandscape(true);
@@ -182,7 +183,7 @@ public class TableExample {
 		//
 		// NOTICE that you must refer to a table AFTER you append it to the document.
 		//
-		doc.add("Table ~\\ref{"+table.getId()+"} lists the past US presidents between 1961 and 1981.");
+		doc.add("Table ~\\ref{"+table.getId()+"} is an example of a cross tabulation");
 		
 		//DEBUG -- TODO: TEMPORARY CODE, REMOVE IT LATER
 		boolean debug=false;

@@ -52,6 +52,11 @@ public class ColumnMeta {
 	private boolean hasLeftSeparator=true;
 	
 	/**
+	 * This value will define whether a vertical line should be present on the left of that column
+	 */
+	private boolean hasRightSeparator=false;
+	
+	/**
 	 * If this variable is not <tt>NULL</tt>, it will define the color of the column. 
 	 */
 	private String backgroundColour=null;
@@ -63,9 +68,9 @@ public class ColumnMeta {
 	private String foregroundColor=null;
 	
 	/**
-	 * The label of the column if any
+	 * The header of the column if any
 	 */
-	private String label=null;
+	private String header=null;
 	
 	/**
 	 * This is the maximum width of the column in centimeters.
@@ -204,16 +209,30 @@ public class ColumnMeta {
 	}
 
 	/**
-	 * @return the label
+	 * @return the header
 	 */
-	public String getLabel() {
-		return label;
+	public String getHeader() {
+		return header;
 	}
 
 	/**
-	 * @param label the label to set
+	 * @param header the header to set
 	 */
-	public void setLabel(String label) {
-		this.label = label;
+	public void setHeader(String val) {
+		this.header = val;
+	}
+
+	/**
+	 * @return the hasRightSeparator
+	 */
+	public boolean hasRightSeparator() {
+		return hasRightSeparator;
+	}
+
+	/**
+	 * @param hasRightSeparator the hasRightSeparator to set
+	 */
+	public void hasRightSeparator(boolean hasRightSeparator) {
+		this.hasRightSeparator = hasRightSeparator;
 	}
 }
