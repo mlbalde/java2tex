@@ -63,6 +63,9 @@ public class SimpleTable implements LatexTable {
 	private StringBuilder cAlignment=new StringBuilder();
 	private ArrayList<ColumnMeta> columnMeta=null;
 	
+	//ROWS
+	private String shadeColor="lightgray";
+	
 	// HEADERS
 	private String[] headers;
 	
@@ -152,7 +155,7 @@ public class SimpleTable implements LatexTable {
 		add("\\caption{"+getCaption()+"}");
 
 		if (hasShading()) {
-			add("\\rowcolors{2}{gray !35}{}");
+			add("\\rowcolors{2}{"+getShadeColor()+"}{}");
 		}
 		
 		if ( isLongTable() ) {
@@ -745,5 +748,19 @@ public class SimpleTable implements LatexTable {
 	 */
 	public void hasShading(boolean hasShading) {
 		this.hasShading = hasShading;
+	}
+
+	/**
+	 * @return the shadeColor
+	 */
+	public String getShadeColor() {
+		return shadeColor;
+	}
+
+	/**
+	 * @param shadeColor the shadeColor to set
+	 */
+	public void setShadeColor(String shadeColor) {
+		this.shadeColor = shadeColor;
 	}
 }
