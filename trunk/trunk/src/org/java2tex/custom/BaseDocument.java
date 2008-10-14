@@ -32,6 +32,7 @@ public class BaseDocument extends LatexDocument {
 		packages.add("{multirow}");
 		packages.add("[utf8]{inputenc}");
 		packages.add("[pdftex]{color,graphicx}");
+		packages.add("[table]{xcolor}");
 	}
 
 	@Override
