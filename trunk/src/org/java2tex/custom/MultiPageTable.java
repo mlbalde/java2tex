@@ -59,13 +59,17 @@ public class MultiPageTable implements LatexTable {
 	// COLUMNS
 	private ArrayList<ColumnMeta> columnMeta;
 	
+	//ROWS
+	private String shadeColor="lightgray";
+	
 	// BODY
 	private ArrayList<String> tableRows; 
 	private StringBuilder latex; 
 	
 	private boolean isLandscape = false;
 	private boolean hasHorizontalLines=false;
-
+	private boolean hasShading=false;
+	
 	/**
 	 * Elementary constructor. 
 	 * 
@@ -100,6 +104,10 @@ public class MultiPageTable implements LatexTable {
 
 		add("\\label{"+getId()+"}\n");
 		
+		if (hasShading()) {
+			add("\\rowcolors{2}{"+getShadeColor()+"}{}");
+		}
+
 		add("\\begin{supertabular}"+getColumnAlignment());
 	}
 
@@ -585,6 +593,34 @@ public class MultiPageTable implements LatexTable {
 	public String[] getHeaders() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * @return the hasShading
+	 */
+	public boolean hasShading() {
+		return hasShading;
+	}
+
+	/**
+	 * @param hasShading the hasShading to set
+	 */
+	public void hasShading(boolean hasShading) {
+		this.hasShading = hasShading;
+	}
+
+	/**
+	 * @return the shadeColor
+	 */
+	public String getShadeColor() {
+		return shadeColor;
+	}
+
+	/**
+	 * @param shadeColor the shadeColor to set
+	 */
+	public void setShadeColor(String shadeColor) {
+		this.shadeColor = shadeColor;
 	}
 
 }
