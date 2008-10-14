@@ -86,7 +86,7 @@ public interface LatexTable {
 	/**
 	 * @param hasHorizontalLines the hasHorizontalLines to set
 	 */
-	public abstract void setHorizontalLines(boolean hasHorizontalLines);
+	public abstract void hasHorizontalLines(boolean hasHorizontalLines);
 
 	/**
 	 * @return the headers

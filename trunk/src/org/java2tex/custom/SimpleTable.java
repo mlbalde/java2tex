@@ -73,6 +73,7 @@ public class SimpleTable implements LatexTable {
 	
 	private boolean isLandscape = false;
 	private boolean hasHorizontalLines=false;
+	private boolean hasShading=false;
 
 	/**
 	 * Elementary constructor. 
@@ -150,6 +151,10 @@ public class SimpleTable implements LatexTable {
 		add("\\begin{table}[h!b!p!]");
 		add("\\caption{"+getCaption()+"}");
 
+		if (hasShading()) {
+			add("\\rowcolors{2}{gray !35}{}");
+		}
+		
 		if ( isLongTable() ) {
 			insert("\\begin{supertabular}");
 		} else {
@@ -619,7 +624,7 @@ public class SimpleTable implements LatexTable {
 	/* (non-Javadoc)
 	 * @see org.java2tex.core.LatexTable#setHorizontalLines(boolean)
 	 */
-	public void setHorizontalLines(boolean hasHorizontalLines) {
+	public void hasHorizontalLines(boolean hasHorizontalLines) {
 		this.hasHorizontalLines = hasHorizontalLines;
 	}
 
@@ -726,5 +731,19 @@ public class SimpleTable implements LatexTable {
 	 */
 	public void setLongTable(boolean isLongTable) {
 		this.isLongTable = isLongTable;
+	}
+
+	/**
+	 * @return the hasShading
+	 */
+	public boolean hasShading() {
+		return hasShading;
+	}
+
+	/**
+	 * @param hasShading the hasShading to set
+	 */
+	public void hasShading(boolean hasShading) {
+		this.hasShading = hasShading;
 	}
 }

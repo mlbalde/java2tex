@@ -534,7 +534,7 @@ public class MultiPageTable implements LatexTable {
 	/**
 	 * @param hasHorizontalLines the hasHorizontalLines to set
 	 */
-	public void setHorizontalLines(boolean hasHorizontalLines) {
+	public void hasHorizontalLines(boolean hasHorizontalLines) {
 		this.hasHorizontalLines = hasHorizontalLines;
 	}
 

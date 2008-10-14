@@ -120,7 +120,7 @@ public class TableCellWrapExample {
 		//
 		bigTable.setLandscape(true);
 
-		bigTable.setHorizontalLines(true);
+		bigTable.hasHorizontalLines(true);
 		
 		ColumnMeta c1 = new ColumnMeta(1,"|p{4cm}",true);
 		c1.setHeader("Vendor Name");

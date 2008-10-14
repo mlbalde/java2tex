@@ -117,7 +117,9 @@ public class TableExample {
 		//
 		table.setLandscape(true);
 
-		table.setHorizontalLines(true);
+		//table.hasHorizontalLines(true);
+		
+		table.hasShading(true);
 		
 		// Define the columns
 		table.setColumnMeta(new ArrayList<ColumnMeta>());
