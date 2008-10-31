@@ -127,7 +127,7 @@ public class MultiPageTable implements LatexTable {
 				insert(" & ");
 			} else {
 				insert(colMeta.getHeader());
-				endRow();
+				add("\\\\");
 			}
 			count++;
 		}
@@ -149,7 +149,7 @@ public class MultiPageTable implements LatexTable {
 
 		//TODO: Parameterize the alignment and the text
 		addMultiColumn(getNCols(), "|c|", "Continued on next page $...$");
-		endRow();
+		add("\\\\");
 		addHorizontalLine();
 		add("}");
 
@@ -157,10 +157,6 @@ public class MultiPageTable implements LatexTable {
 		addHorizontalLine();
 		addHorizontalLine();
 
-		//TODO: Parameterize the alignment and the text
-		addMultiColumn(getNCols(), "|c|", "Continued on next page $...$");
-		endRow();
-		addHorizontalLine();
 		add("}");
 	}
 
