@@ -55,6 +55,10 @@ public class LatexProcessor {
 	 */
 	private String latexRootDir;
 
+	private boolean isTerminated = false;
+	
+	private Process pdfLatexProcess = null;
+	
 	/**
 	 * If the root directory is not supplied, 
 	 * we check for the environment property <tt>java2tex.home</tt>.
@@ -188,27 +192,37 @@ public class LatexProcessor {
 			log.debug("Running on a Unix clone? \n You should have pdflatex in your path.");
 			log.info("Type \n >> which pdflatex \n on a terminal to check if you have pdflatex on your PATH");
 		}
-
-		String[] args = { "pdflatex", doc.getFilename()};
+		// By default pdflatex waits for an user input on error. The -halt-on-error option 
+		// will terminate pdflatex execution on error.
+		String[] args = { "pdflatex", "-halt-on-error", doc.getFilename()};
 		log.debug("Output: \n" + Arrays.toString(args));
 		
 		ProcessBuilder pb = new ProcessBuilder(args);
 		
 		pb.directory(new File(getLatexRootDir()));
-
-		run(pb);
-		
-		//Run twice to get the references right
-		run(pb);		
+		// Do not run if we have been terminated.
+		if ( ! isTerminated ) {
+			run(pb);
+		}
+		if ( ! isTerminated ) {
+			//Run twice to get the references right
+			run(pb);
+		}
 	}
 
-	private static void run(ProcessBuilder pb) {
-		Process process = null;
-
+	public void terminate() {
+		if ( pdfLatexProcess != null ) {
+			pdfLatexProcess.destroy();
+		}
+		isTerminated = true;
+	}
+	
+	private void run(ProcessBuilder pb) {
 		try {
-			process = pb.start();
-
-			InputStream is = process.getInputStream();
+			// Save the reference of process object.
+			// To be used for cancellation if needed.
+			pdfLatexProcess = pb.start();
+			InputStream is = pdfLatexProcess.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
 			String line = null;
@@ -216,7 +230,7 @@ public class LatexProcessor {
 			while ((line = br.readLine()) != null) {
 				log.debug(line + "\n");
 			}
-
+			pdfLatexProcess = null;
 		} catch (IOException ioX) {
 			log.error(ioX.getMessage());
 		}		
