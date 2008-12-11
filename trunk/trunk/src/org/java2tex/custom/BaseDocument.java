@@ -30,7 +30,6 @@ public class BaseDocument extends LatexDocument {
 		packages.add("{amsmath,amssymb,amsfonts}");
 		packages.add("{multicol}");
 		packages.add("{multirow}");
-		packages.add("[utf8]{inputenc}");
 		packages.add("[pdftex]{color,graphicx}");
 		packages.add("[table]{xcolor}");
 	}
@@ -140,7 +139,14 @@ public class BaseDocument extends LatexDocument {
 		latex.append("\\rfoot{\\thepage}\n");		
 		latex.append("\\renewcommand{\\headrulewidth}{0.4pt}\n");
 		latex.append("\\renewcommand{\\footrulewidth}{0.4pt}\n");
+		if ( getDefaultFontFamily() != null && getDefaultFontFamily().trim().length() > 0 ) {
+			latex.append("\\renewcommand{\\rmdefault}{").append(getDefaultFontFamily()).append("}\\rmfamily\n");
+		}
 		latex.append("%\n");
+		for ( String ttf : getDeclaredTrueTypeFonts() ) {
+			String[] fontNames = ttf.split(":");
+			latex.append("\\DeclareTruetypeFont{" + fontNames[0] + "}{" + fontNames[1] +  "}\n");
+		}
 		latex.append("% --- End of other definitions ---\n");
 		latex.append("%\n");		
 		latex.append("\\parindent 1cm \n");
@@ -178,8 +184,8 @@ public class BaseDocument extends LatexDocument {
 		latex.append("\\noindent \n");
 		latex.append("\\begin{tabular*}{0.95\\textwidth}{@{\\extracolsep{\\fill}} ll} \n");
 		latex.append("  \\hline \\\\ \n");
-		latex.append("    \\bf{Title}      & "+getTitle()+" \\\\ \n");
-		latex.append("    \\bf{Author}     & "+getAuthor()+" \\\\ \n");
+		latex.append("    \\bf{Title}      & " + getTitle() + " \\\\ \n");
+		latex.append("    \\bf{Author}     & " + getAuthor() + " \\\\ \n");
 		latex.append("	  Created on & \\today \\\\ \n");
 		latex.append("  \\hline \n");
 		latex.append("\\end{tabular*} \n");
