@@ -23,6 +23,7 @@
 package org.java2tex.core;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -96,6 +97,10 @@ public abstract class LatexDocument {
 	
 	private String keywords;
 	
+	private String defaultFontFamily;
+	
+	private List<String> declaredTrueTypeFonts = new ArrayList<String>();
+	
 	public LatexDocument() {		
 		this("");
 	}
@@ -111,6 +116,39 @@ public abstract class LatexDocument {
 		this.body = new StringBuffer();
 		
 		this.packages = new ArrayList<String>();		
+	}
+	
+	
+	/**
+	 * Getter for the defaultFontFamily.
+	 *
+	 * @return the defaultFontFamily
+	 */
+	public String getDefaultFontFamily() {
+		return defaultFontFamily;
+	}
+
+	/**
+	 * Setter for the defaultFontFamily.
+	 *
+	 * @param defaultFontFamily the defaultFontFamily to set
+	 */
+	public void setDefaultFontFamily(String defaultFontFamily) {
+		this.defaultFontFamily = defaultFontFamily;
+	}
+
+	
+	/**
+	 * Getter for the declaredTrueTypeFonts.
+	 *
+	 * @return the declaredTrueTypeFonts
+	 */
+	public List<String> getDeclaredTrueTypeFonts() {
+		return declaredTrueTypeFonts;
+	}
+
+	public void declareTrueTypeFont(String trueTypeFontName, String shortTrueTypeFontName) {
+		declaredTrueTypeFonts.add(trueTypeFontName + ":" + shortTrueTypeFontName);
 	}
 	
 	/**

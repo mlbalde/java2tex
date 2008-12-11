@@ -24,10 +24,13 @@ package org.java2tex.core;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -246,9 +249,11 @@ public class LatexProcessor {
 		File file = new File(filename.toString());
 
 		try {
-			FileWriter fw = new FileWriter(file);
-			fw.write(doc.getLatex());
-			fw.close();
+			// FileWriter fw = new FileWriter(file);
+			FileOutputStream fos = new FileOutputStream(file);
+			Writer out = new OutputStreamWriter(fos, "UTF8");
+			out.write(doc.getLatex());
+			out.close();
 		} catch (IOException ioX) {
 			log.error(ioX.getMessage());
 		}
