@@ -99,6 +99,8 @@ public abstract class LatexDocument {
 	
 	private String defaultFontFamily;
 	
+	private String localeDate;
+	
 	private List<String> declaredTrueTypeFonts = new ArrayList<String>();
 	
 	public LatexDocument() {		
@@ -333,6 +335,15 @@ public abstract class LatexDocument {
 	public void setStyleOptions(String styleOptions) {
 		this.styleOptions = styleOptions;
 	}
+	
+	public String getLocaleDate() {
+		return localeDate;
+	}
+
+	public void setLocaleDate(String localeDate) {
+		this.localeDate = localeDate;
+	}
+	
 	
 	//-------------------------------------------------------------
 	

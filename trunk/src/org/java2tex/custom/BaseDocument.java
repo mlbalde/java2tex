@@ -160,7 +160,7 @@ public class BaseDocument extends LatexDocument {
 		latex.append("\\definecolor{rltgreen}{rgb}{0,0.5,0}\n");
 		latex.append("\\definecolor{rltblue}{rgb}{0,0,0.75}\n");
 		latex.append("\\title{"+getTitle()+"}\n");
-		latex.append("\\author{"+getAuthor()+"\\\\  Created on \\today }\n");
+		latex.append("\\author{"+getAuthor()+"\\\\  Created on " + getLocaleDate()+ "}\n");
 
 		return latex.toString();
 	}
@@ -186,7 +186,7 @@ public class BaseDocument extends LatexDocument {
 		latex.append("  \\hline \\\\ \n");
 		latex.append("    \\bf{Title}      & " + getTitle() + " \\\\ \n");
 		latex.append("    \\bf{Author}     & " + getAuthor() + " \\\\ \n");
-		latex.append("	  Created on & \\today \\\\ \n");
+		latex.append("	  Created on & " + getLocaleDate()+ " \\\\ \n");
 		latex.append("  \\hline \n");
 		latex.append("\\end{tabular*} \n");
 		
