@@ -24,8 +24,6 @@ public class XeTeXDocument extends LatexDocument {
 	public XeTeXDocument(String title) {
 		
 		super(title);
-		
-		addPackages();		
 	}
 
 	public void addPackages() {

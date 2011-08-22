@@ -128,7 +128,9 @@ public abstract class LatexDocument {
 		
 		this.body = new StringBuffer();
 		
-		this.packages = new ArrayList<String>();		
+		this.packages = new ArrayList<String>();
+
+		addPackages();
 	}
 	
 	
