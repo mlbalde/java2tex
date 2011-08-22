@@ -70,6 +70,17 @@ public abstract class LatexDocument {
 	
 	protected ArrayList<String> packages;
 	
+	// Header
+	private String centerHeader;
+	private String rightHeader;
+	private String leftHeader;
+	
+	// Footer
+	private String centerFooter;
+	private String rightFooter;
+	private String leftFooter;
+
+	
 	/**
 	 * The options for the different styles are:
 	 *
@@ -193,6 +204,8 @@ public abstract class LatexDocument {
 	public abstract String initLatex();
 	
 	public abstract String getLatex();
+	
+	public abstract void addPackages();
 	
 	/**
 	 * 
@@ -458,5 +471,53 @@ public abstract class LatexDocument {
 	 */
 	public void setNumberOfTables(int numberOfTables) {
 		this.numberOfTables = numberOfTables;
+	}
+
+	public String getCenterHeader() {
+		return centerHeader;
+	}
+
+	public void setCenterHeader(String centerHeader) {
+		this.centerHeader = centerHeader;
+	}
+
+	public String getRightHeader() {
+		return rightHeader;
+	}
+
+	public void setRightHeader(String rightHeader) {
+		this.rightHeader = rightHeader;
+	}
+
+	public String getLeftHeader() {
+		return leftHeader;
+	}
+
+	public void setLeftHeader(String leftHeader) {
+		this.leftHeader = leftHeader;
+	}
+
+	public String getCenterFooter() {
+		return centerFooter;
+	}
+
+	public void setCenterFooter(String centerFooter) {
+		this.centerFooter = centerFooter;
+	}
+
+	public String getRightFooter() {
+		return rightFooter;
+	}
+
+	public void setRightFooter(String rightFooter) {
+		this.rightFooter = rightFooter;
+	}
+
+	public String getLeftFooter() {
+		return leftFooter;
+	}
+
+	public void setLeftFooter(String leftFooter) {
+		this.leftFooter = leftFooter;
 	}
 }

@@ -25,7 +25,6 @@ package org.java2tex.core;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -47,7 +46,7 @@ import org.apache.log4j.Logger;
  * @since   <tt>0.1</tt> 
  * @version <tt>1.0</tt>
  */
-public class LatexProcessor {
+public class LatexProcessor implements TeXProcessor{
 
 	private static final Logger log = Logger.getLogger(LatexProcessor.class);
 	
@@ -62,6 +61,8 @@ public class LatexProcessor {
 	
 	private Process pdfLatexProcess = null;
 	
+	private String teXCommand; 
+	
 	/**
 	 * If the root directory is not supplied, 
 	 * we check for the environment property <tt>java2tex.home</tt>.
@@ -74,11 +75,19 @@ public class LatexProcessor {
 	public LatexProcessor() throws Java2TeXException {
 		
 		this.setupLatexRootDir(null);
+		this.teXCommand = "pdflatex";
 		log.info("Created LatexProcessor instance ...");		
 	}
 	
 	public LatexProcessor(String rootDir) {
-		latexRootDir=rootDir;
+		latexRootDir = rootDir;
+		this.teXCommand = "pdflatex";
+		log.info("Created LatexProcessor instance ...");
+	}
+	
+	public LatexProcessor(String rootDir, String teXCommand) {
+		latexRootDir = rootDir;
+		this.teXCommand = teXCommand;
 		log.info("Created LatexProcessor instance ...");
 	}
 	
@@ -192,12 +201,12 @@ public class LatexProcessor {
 		
 		} else {
 		
-			log.debug("Running on a Unix clone? \n You should have pdflatex in your path.");
-			log.info("Type \n >> which pdflatex \n on a terminal to check if you have pdflatex on your PATH");
+			log.debug("Running on a Unix clone? \n You should have "+ teXCommand +" in your path.");
+			log.info("Type \n >> which  "+ teXCommand +"  \n on a terminal to check if you have "+ teXCommand +" on your PATH");
 		}
-		// By default pdflatex waits for an user input on error. The -halt-on-error option 
-		// will terminate pdflatex execution on error.
-		String[] args = { "pdflatex", "-halt-on-error", doc.getFilename()};
+		// By default teXCommand waits for an user input on error. The -halt-on-error option 
+		// will terminate teXCommand execution on error.
+		String[] args = { teXCommand, "-halt-on-error", doc.getFilename()};
 		log.debug("Output: \n" + Arrays.toString(args));
 		
 		ProcessBuilder pb = new ProcessBuilder(args);

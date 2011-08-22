@@ -32,7 +32,7 @@ import org.java2tex.core.Java2TeXException;
 import org.java2tex.core.LatexConstants;
 import org.java2tex.core.LatexDocument;
 import org.java2tex.core.LatexProcessor;
-import org.java2tex.custom.BaseDocument;
+import org.java2tex.custom.PdfTeXDocument;
 import org.java2tex.custom.SimpleTable;
 
 /**
@@ -90,7 +90,7 @@ public class TableExample {
 	}
 
 	private static LatexDocument demo() throws Java2TeXException {
-		BaseDocument doc = new BaseDocument("MyTableExample");
+		PdfTeXDocument doc = new PdfTeXDocument("MyTableExample");
 		
 		doc.setDocumentStyle("article");
 		

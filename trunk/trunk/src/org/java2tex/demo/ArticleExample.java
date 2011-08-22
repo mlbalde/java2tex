@@ -29,7 +29,7 @@ import org.java2tex.core.Java2TeXException;
 import org.java2tex.core.LatexDocument;
 import org.java2tex.core.LatexGraphics;
 import org.java2tex.core.LatexProcessor;
-import org.java2tex.custom.BaseDocument;
+import org.java2tex.custom.PdfTeXDocument;
 import org.java2tex.custom.SimpleTable;
 
 /**
@@ -98,7 +98,7 @@ public class ArticleExample {
 	 */
 	public static LatexDocument demo() throws Java2TeXException {
 		
-		BaseDocument doc = new BaseDocument("MyDocument");
+		PdfTeXDocument doc = new PdfTeXDocument("MyDocument");
 		
 		doc.setDocumentStyle("article");
 		
