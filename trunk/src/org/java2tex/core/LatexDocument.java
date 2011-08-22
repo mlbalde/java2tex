@@ -520,4 +520,13 @@ public abstract class LatexDocument {
 	public void setLeftFooter(String leftFooter) {
 		this.leftFooter = leftFooter;
 	}
+
+	public synchronized String getNewTableId() {
+		
+		int n = getNumberOfTables();
+		String tableId = "TableId-"+n;
+		setNumberOfTables(n++);
+		
+		return tableId;
+	}
 }
