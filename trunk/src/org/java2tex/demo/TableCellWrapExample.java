@@ -29,7 +29,7 @@ import org.java2tex.core.ColumnMeta;
 import org.java2tex.core.Java2TeXException;
 import org.java2tex.core.LatexDocument;
 import org.java2tex.core.LatexProcessor;
-import org.java2tex.custom.BaseDocument;
+import org.java2tex.custom.PdfTeXDocument;
 import org.java2tex.custom.MultiPageTable;
 
 /**
@@ -87,7 +87,7 @@ public class TableCellWrapExample {
 	}
 
 	private static LatexDocument demo() throws Java2TeXException {
-		BaseDocument doc = new BaseDocument("MyTableCellWrapExample");
+		PdfTeXDocument doc = new PdfTeXDocument("MyTableCellWrapExample");
 		
 		doc.usePackage("{longtable}");
 		doc.usePackage("{supertabular}");
