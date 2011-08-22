@@ -91,15 +91,6 @@ public class XeTeXDocument extends LatexDocument {
 		
 	}
 
-	public synchronized String getNewTableId() {
-		
-		int n = getNumberOfTables();
-		String tableId = "TableId-"+n;
-		setNumberOfTables(n++);
-		
-		return tableId;
-	}
-	
 	@Override
 	public void addTable(LatexTable table) {
 		
