@@ -30,7 +30,7 @@ public class PdfTeXDocument extends LatexDocument {
 	
 	public PdfTeXDocument(String title) {
 		
-		super(title);		
+		super(title);
 	}
 	
 	public void addPackages() {
