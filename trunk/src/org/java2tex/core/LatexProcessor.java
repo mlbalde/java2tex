@@ -61,7 +61,9 @@ public class LatexProcessor implements TeXProcessor{
 	
 	private Process pdfLatexProcess = null;
 	
-	private String teXCommand; 
+	private String teXCommand;
+	
+	private String teXCommandDir;
 	
 	/**
 	 * If the root directory is not supplied, 
@@ -85,8 +87,9 @@ public class LatexProcessor implements TeXProcessor{
 		log.info("Created LatexProcessor instance ...");
 	}
 	
-	public LatexProcessor(String rootDir, String teXCommand) {
+	public LatexProcessor(String rootDir, String teXCommand, String teXCommandDir) {
 		latexRootDir = rootDir;
+		this.teXCommandDir= teXCommandDir;
 		this.teXCommand = teXCommand;
 		log.info("Created LatexProcessor instance ...");
 	}
@@ -206,6 +209,9 @@ public class LatexProcessor implements TeXProcessor{
 		}
 		// By default teXCommand waits for an user input on error. The -halt-on-error option 
 		// will terminate teXCommand execution on error.
+		if (teXCommandDir != null) {
+			teXCommand = teXCommandDir + File.separator + teXCommand;
+		}
 		String[] args = { teXCommand, "-halt-on-error", doc.getFilename()};
 		log.debug("Output: \n" + Arrays.toString(args));
 		
@@ -231,6 +237,13 @@ public class LatexProcessor implements TeXProcessor{
 	
 	private void run(ProcessBuilder pb) {
 		try {
+			if (teXCommandDir != null) {
+				log.info("PATH: "+ pb.environment().get("PATH"));
+				pb.environment().put("PATH",
+						pb.environment().get("PATH") + File.pathSeparator + teXCommandDir);				
+				log.info("PATH: "+ pb.environment().get("PATH"));
+			}
+
 			// Save the reference of process object.
 			// To be used for cancellation if needed.
 			pdfLatexProcess = pb.start();
