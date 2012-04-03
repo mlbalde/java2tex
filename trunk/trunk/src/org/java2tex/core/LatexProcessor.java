@@ -238,10 +238,17 @@ public class LatexProcessor implements TeXProcessor{
 	private void run(ProcessBuilder pb) {
 		try {
 			if (teXCommandDir != null) {
-				log.info("PATH: "+ pb.environment().get("PATH"));
-				pb.environment().put("PATH",
-						pb.environment().get("PATH") + File.pathSeparator + teXCommandDir);				
-				log.info("PATH: "+ pb.environment().get("PATH"));
+				String os = System.getProperty("os.name");
+				String PATH;
+				if (os.startsWith("Windows")) {
+					PATH = "Path";
+				} else {
+					PATH = "PATH";
+				}
+				log.info(PATH+": "+ pb.environment().get(PATH));
+				pb.environment().put(PATH,
+						pb.environment().get(PATH) + File.pathSeparator + teXCommandDir);				
+				log.info(PATH+": "+ pb.environment().get(PATH));
 			}
 
 			// Save the reference of process object.
